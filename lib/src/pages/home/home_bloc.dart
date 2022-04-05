@@ -8,8 +8,7 @@ class HomeBloc extends ChangeNotifier {
   HomeBloc.internal();
 
   FloatingActionButton? floatingActionButton;
-  final _IndexPaginaChangeNotifier indexPaginaChangeNotifier =
-      _IndexPaginaChangeNotifier();
+  final ChangeNotifier indexPaginaChangeNotifier = ChangeNotifier();
   int _indexPaginaAtual = 0;
 
   int get indexPaginaAtual {
@@ -25,5 +24,3 @@ class HomeBloc extends ChangeNotifier {
     this.floatingActionButton = floatingActionButton;
   }
 }
-
-class _IndexPaginaChangeNotifier extends ChangeNotifier {}

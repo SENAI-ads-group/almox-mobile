@@ -1,11 +1,7 @@
 import 'package:almox_mobile/src/pages/home/home_bloc.dart';
-import 'package:almox_mobile/src/pages/login/login_page.dart';
 import 'package:almox_mobile/src/pages/operador/operador_page.dart';
 import 'package:almox_mobile/src/pages/requisicoes_requisitante/requisicoes_requisitante.dart';
 import 'package:flutter/material.dart';
-import 'package:almox_mobile/src/widgets/botoes_navegacao/botao_navegacao_home_widget.dart';
-import 'package:almox_mobile/src/widgets/botoes_navegacao/botao_navegacao_requisicoes.widget.dart';
-import 'package:almox_mobile/src/widgets/botoes_navegacao/botao_navegacao_operador_widget.dart';
 
 class HomePage extends StatefulWidget {
   final List<PaginaNavegacao> paginas = [

@@ -1,5 +1,6 @@
 import 'package:almox_mobile/src/model/grupo_model.dart';
 import 'package:almox_mobile/src/model/produto_model.dart';
+import 'package:almox_mobile/src/widgets/card_produto/botoes_adicionar_remover.dart';
 import 'package:flutter/material.dart';
 
 class PesquisarProdutosPage extends StatefulWidget {
@@ -37,6 +38,8 @@ class _PesquisarProdutosPageState extends State<PesquisarProdutosPage> {
   ];
 
   List<ProdutoModel> produtosSelecionados = [];
+
+  bool editandoQuantidade = false;
 
   _setProdutoSelecionado(ProdutoModel produto, bool? selecionado) {
     setState(() {
@@ -120,7 +123,11 @@ class _PesquisarProdutosPageState extends State<PesquisarProdutosPage> {
                 produto, !produtosSelecionados.contains(produto)),
             title: Text(produto.descricao),
             subtitle: Text(produto.grupo.descricao),
-            trailing: _checkbox(produto),
+            trailing:
+                editandoQuantidade && produtosSelecionados.contains(produto)
+                    ? BotoesAdicionarRemoverProduto(
+                        onRemoverPressed: () {}, onAdicionarPressed: () {})
+                    : _checkbox(produto),
           ),
         );
 
@@ -150,7 +157,11 @@ class _PesquisarProdutosPageState extends State<PesquisarProdutosPage> {
           floatingActionButton: produtosSelecionados.isNotEmpty
               ? FloatingActionButton(
                   backgroundColor: Color.fromRGBO(200, 230, 201, 1),
-                  onPressed: _onWillPop,
+                  onPressed: () {
+                    setState(() {
+                      editandoQuantidade = true;
+                    });
+                  },
                   child: Icon(
                     Icons.add_outlined,
                     color: Color.fromRGBO(37, 96, 41, 1),

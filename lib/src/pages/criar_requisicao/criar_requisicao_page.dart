@@ -1,6 +1,7 @@
 import 'package:almox_mobile/src/model/produto_model.dart';
 import 'package:flutter/material.dart';
 import 'package:almox_mobile/src/widgets/botao_acao_widget.dart';
+import 'package:almox_mobile/src/widgets/card_produto/botoes_adicionar_remover.dart';
 
 class CriarRequisicaoPage extends StatefulWidget {
   const CriarRequisicaoPage({Key? key}) : super(key: key);
@@ -33,34 +34,8 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
               onTap: () => {},
               title: Text(produto.descricao),
               subtitle: Text(produto.grupo.descricao),
-              trailing: Wrap(
-                runSpacing: 0,
-                spacing: 0,
-                children: <Widget>[
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.remove_circle_outlined,
-                      color: Color.fromRGBO(220, 38, 38, 1),
-                      size: 25,
-                    ),
-                  ),
-                  SizedBox(
-                      child: SizedBox(
-                          width: 45,
-                          child: TextField(
-                            textAlign: TextAlign.center,
-                          ))),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.add_circle_outlined,
-                      color: Colors.green,
-                      size: 25,
-                    ),
-                  ),
-                ],
-              )),
+              trailing: BotoesAdicionarRemoverProduto(
+                  onRemoverPressed: () {}, onAdicionarPressed: () {})),
         );
 
     return Scaffold(
@@ -77,11 +52,32 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
                   Row(
                     children: [
                       Expanded(
-                        child: BotaoAcao(
-                            onPressed: _pesquisarProdutos,
-                            icon: Icon(Icons.add, color: Colors.black),
-                            labelText: 'Adicionar Item'),
+                        child: ElevatedButton.icon(
+                          icon: Icon(Icons.add),
+                          label: Text(
+                            'Incluir',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          style: ButtonStyle(
+                              shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          ))),
+                          onPressed: _pesquisarProdutos,
+                        ),
                       ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                              shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          ))),
+                          child: Icon(Icons.camera_alt),
+                          onPressed: () {},
+                        ),
+                      )
                     ],
                   ),
                   Expanded(
@@ -90,38 +86,7 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
                           .map((ProdutoModel produto) => _cardProduto(produto))
                           .toList(),
                     ),
-                  ),
-                  // Row(
-                  //   children: [
-                  //     Expanded(
-                  //       child: ElevatedButton.icon(
-                  //         icon: Icon(Icons.add),
-                  //         label: Text(
-                  //           'Incluir',
-                  //           style: TextStyle(fontSize: 18),
-                  //         ),
-                  //         style: ButtonStyle(
-                  //             shape: MaterialStateProperty.all(
-                  //                 RoundedRectangleBorder(
-                  //           borderRadius: BorderRadius.circular(18.0),
-                  //         ))),
-                  //         onPressed: () {},
-                  //       ),
-                  //     ),
-                  //     Container(
-                  //       margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                  //       child: ElevatedButton(
-                  //         style: ButtonStyle(
-                  //             shape: MaterialStateProperty.all(
-                  //                 RoundedRectangleBorder(
-                  //           borderRadius: BorderRadius.circular(18.0),
-                  //         ))),
-                  //         child: Icon(Icons.camera_alt),
-                  //         onPressed: () {},
-                  //       ),
-                  //     )
-                  //   ],
-                  // )
+                  )
                 ],
               ),
             ),

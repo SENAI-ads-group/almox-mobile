@@ -16,26 +16,21 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
   @override
   Widget build(BuildContext context) {
     _pesquisarProdutos() async {
-      List<ProdutoModel> produtosSelecionadosNaPesquisa =
-          await Navigator.pushNamed(context, '/pesquisarProdutos')
-              as List<ProdutoModel>;
+      List<ProdutoModel> produtosSelecionadosNaPesquisa = await Navigator.pushNamed(context, '/selecionarProdutos') as List<ProdutoModel>;
 
       setState(() {
-        produtosSelecionados.addAll(produtosSelecionadosNaPesquisa
-            .where((p) => !produtosSelecionados.any((p2) => p2.id == p.id)));
+        produtosSelecionados.addAll(produtosSelecionadosNaPesquisa.where((p) => !produtosSelecionados.any((p2) => p2.id == p.id)));
       });
     }
 
     _cardProduto(ProdutoModel produto) => Card(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)), side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
           child: ListTile(
               onTap: () => {},
               title: Text(produto.descricao),
               subtitle: Text(produto.grupo.descricao),
-              trailing: BotoesAdicionarRemoverProduto(
-                  onRemoverPressed: () {}, onAdicionarPressed: () {})),
+              trailing: BotoesAdicionarRemoverProduto(onRemoverPressed: () {}, onAdicionarPressed: () {})),
         );
 
     return Scaffold(
@@ -59,8 +54,7 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
                             style: TextStyle(fontSize: 18),
                           ),
                           style: ButtonStyle(
-                              shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
+                              shape: MaterialStateProperty.all(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
                           ))),
                           onPressed: _pesquisarProdutos,
@@ -70,8 +64,7 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
                         margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
                         child: ElevatedButton(
                           style: ButtonStyle(
-                              shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
+                              shape: MaterialStateProperty.all(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
                           ))),
                           child: Icon(Icons.camera_alt),
@@ -82,9 +75,7 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
                   ),
                   Expanded(
                     child: ListView(
-                      children: produtosSelecionados
-                          .map((ProdutoModel produto) => _cardProduto(produto))
-                          .toList(),
+                      children: produtosSelecionados.map((ProdutoModel produto) => _cardProduto(produto)).toList(),
                     ),
                   )
                 ],

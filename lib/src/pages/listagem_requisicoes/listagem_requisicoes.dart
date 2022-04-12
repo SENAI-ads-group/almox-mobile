@@ -5,19 +5,16 @@ import 'package:flutter/material.dart';
 
 import 'package:almox_mobile/src/pages/home/home_page.dart';
 
-class RequisicoesRequisitantePage extends PaginaNavegacao {
+class ListagemRequisicoesPage extends PaginaNavegacao {
   final HomeBloc homeBloc = HomeBloc();
 
-  RequisicoesRequisitantePage()
-      : super(
-            child: _RequisicoesRequisitantePage(),
-            botaoNavegacao: BotaoNavegacaoRequisicoes());
+  ListagemRequisicoesPage() : super(child: _ListagemRequisicoesPage(), botaoNavegacao: BotaoNavegacaoRequisicoes());
 }
 
-class _RequisicoesRequisitantePage extends StatelessWidget {
+class _ListagemRequisicoesPage extends StatelessWidget {
   final HomeBloc homeBloc = HomeBloc();
 
-  _RequisicoesRequisitantePage({Key? key}) : super(key: key);
+  _ListagemRequisicoesPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

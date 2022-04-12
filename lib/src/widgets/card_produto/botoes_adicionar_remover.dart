@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 class BotoesAdicionarRemoverProduto extends StatelessWidget {
   final VoidCallback onRemoverPressed;
   final VoidCallback onAdicionarPressed;
+  final FormField? quantidadeTextField;
 
-  const BotoesAdicionarRemoverProduto(
-      {Key? key,
-      required this.onRemoverPressed,
-      required this.onAdicionarPressed})
+  const BotoesAdicionarRemoverProduto({Key? key, required this.onRemoverPressed, required this.onAdicionarPressed, this.quantidadeTextField})
       : super(key: key);
 
   @override
@@ -24,12 +22,7 @@ class BotoesAdicionarRemoverProduto extends StatelessWidget {
             size: 25,
           ),
         ),
-        SizedBox(
-            child: SizedBox(
-                width: 45,
-                child: TextField(
-                  textAlign: TextAlign.center,
-                ))),
+        SizedBox(child: SizedBox(width: 65, child: quantidadeTextField)),
         IconButton(
           onPressed: onAdicionarPressed,
           icon: Icon(

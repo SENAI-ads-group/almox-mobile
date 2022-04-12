@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class BotoesAdicionarRemoverProduto extends StatelessWidget {
   final VoidCallback onRemoverPressed;
   final VoidCallback onAdicionarPressed;
-  final FormField? quantidadeTextField;
+  final TextField? quantidadeTextField;
 
   const BotoesAdicionarRemoverProduto({Key? key, required this.onRemoverPressed, required this.onAdicionarPressed, this.quantidadeTextField})
       : super(key: key);

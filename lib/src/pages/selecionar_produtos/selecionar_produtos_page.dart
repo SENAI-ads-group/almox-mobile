@@ -137,7 +137,9 @@ class _SelecionarProdutosPageState extends State<SelecionarProdutosPage> {
       TextEditingController quantidadeTextFieldController = TextEditingController(text: "${itemRequisicao.quantidade}");
       FocusNode focusNode = FocusNode();
       focusNode.addListener((() {
-        //if (focusNode.hasFocus) quantidadeTextFieldController.clear();
+        if (focusNode.hasFocus) {
+          quantidadeTextFieldController.selection = TextSelection(baseOffset: 0, extentOffset: quantidadeTextFieldController.text.length);
+        }
       }));
 
       return Card(
@@ -146,10 +148,10 @@ class _SelecionarProdutosPageState extends State<SelecionarProdutosPage> {
           title: Text(produto.descricao),
           subtitle: Text(produto.grupo.descricao),
           trailing: BotoesAdicionarRemoverProduto(
-              quantidadeTextField: TextFormField(
+              quantidadeTextField: TextField(
                 focusNode: focusNode,
                 controller: quantidadeTextFieldController,
-                onFieldSubmitted: (String valor) {
+                onSubmitted: (String valor) {
                   setState(() {
                     itemRequisicao.quantidade = double.parse(valor);
                   });

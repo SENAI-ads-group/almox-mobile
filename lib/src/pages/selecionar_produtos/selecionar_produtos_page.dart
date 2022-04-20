@@ -3,6 +3,7 @@ import 'package:almox_mobile/src/model/item_requisicao_model.dart';
 import 'package:almox_mobile/src/model/produto_model.dart';
 import 'package:almox_mobile/src/widgets/card_produto/botoes_adicionar_remover.dart';
 import 'package:flutter/material.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 
 class SelecionarProdutosPage extends StatefulWidget {
   const SelecionarProdutosPage({Key? key}) : super(key: key);
@@ -43,6 +44,24 @@ class _SelecionarProdutosPageState extends State<SelecionarProdutosPage> {
   }
 
   Future<bool> _onWillPop(BuildContext context) {
+    if (itensRequisicao.isNotEmpty) {
+      bool existeItemSemQuantidade = itensRequisicao.any((item) => item.quantidade <= 0);
+
+      if (existeItemSemQuantidade) {
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.WARNING,
+          buttonsBorderRadius: BorderRadius.all(Radius.circular(2)),
+          headerAnimationLoop: false,
+          animType: AnimType.SCALE,
+          desc: 'Informe a quantidade dos produtos!',
+          showCloseIcon: true,
+          btnOkColor: Colors.green,
+          btnOkOnPress: () {},
+        ).show();
+        return Future.value(false);
+      }
+    }
     Navigator.pop(context, produtosSelecionados);
     return Future.value(false);
   }
@@ -137,7 +156,9 @@ class _SelecionarProdutosPageState extends State<SelecionarProdutosPage> {
       TextEditingController quantidadeTextFieldController = TextEditingController(text: "${itemRequisicao.quantidade}");
       FocusNode focusNode = FocusNode();
       focusNode.addListener((() {
-        //if (focusNode.hasFocus) quantidadeTextFieldController.clear();
+        if (focusNode.hasFocus) {
+          quantidadeTextFieldController.selection = TextSelection(baseOffset: 0, extentOffset: quantidadeTextFieldController.text.length);
+        }
       }));
 
       return Card(
@@ -146,10 +167,10 @@ class _SelecionarProdutosPageState extends State<SelecionarProdutosPage> {
           title: Text(produto.descricao),
           subtitle: Text(produto.grupo.descricao),
           trailing: BotoesAdicionarRemoverProduto(
-              quantidadeTextField: TextFormField(
+              quantidadeTextField: TextField(
                 focusNode: focusNode,
                 controller: quantidadeTextFieldController,
-                onFieldSubmitted: (String valor) {
+                onSubmitted: (String valor) {
                   setState(() {
                     itemRequisicao.quantidade = double.parse(valor);
                   });
@@ -179,8 +200,8 @@ class _SelecionarProdutosPageState extends State<SelecionarProdutosPage> {
         ),
       );
 
-  FloatingActionButton _botaoConfirmarQuantidades() => FloatingActionButton(
-      onPressed: () {},
+  FloatingActionButton _botaoConfirmarQuantidades(BuildContext context) => FloatingActionButton(
+      onPressed: () => _onWillPop(context),
       child: Icon(
         Icons.check,
       ));
@@ -210,7 +231,7 @@ class _SelecionarProdutosPageState extends State<SelecionarProdutosPage> {
             if (produtosSelecionados.isNotEmpty && !editandoQuantidade) {
               return _botaoAdicionar();
             } else if (editandoQuantidade) {
-              return _botaoConfirmarQuantidades();
+              return _botaoConfirmarQuantidades(context);
             }
             return null;
           }(),

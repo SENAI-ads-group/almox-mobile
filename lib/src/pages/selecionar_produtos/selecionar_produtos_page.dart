@@ -3,6 +3,7 @@ import 'package:almox_mobile/src/model/item_requisicao_model.dart';
 import 'package:almox_mobile/src/model/produto_model.dart';
 import 'package:almox_mobile/src/widgets/card_produto/botoes_adicionar_remover.dart';
 import 'package:flutter/material.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 
 class SelecionarProdutosPage extends StatefulWidget {
   const SelecionarProdutosPage({Key? key}) : super(key: key);
@@ -43,6 +44,24 @@ class _SelecionarProdutosPageState extends State<SelecionarProdutosPage> {
   }
 
   Future<bool> _onWillPop(BuildContext context) {
+    if (itensRequisicao.isNotEmpty) {
+      bool existeItemSemQuantidade = itensRequisicao.any((item) => item.quantidade <= 0);
+
+      if (existeItemSemQuantidade) {
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.WARNING,
+          buttonsBorderRadius: BorderRadius.all(Radius.circular(2)),
+          headerAnimationLoop: false,
+          animType: AnimType.SCALE,
+          desc: 'Informe a quantidade dos produtos!',
+          showCloseIcon: true,
+          btnOkColor: Colors.green,
+          btnOkOnPress: () {},
+        ).show();
+        return Future.value(false);
+      }
+    }
     Navigator.pop(context, produtosSelecionados);
     return Future.value(false);
   }
@@ -181,8 +200,8 @@ class _SelecionarProdutosPageState extends State<SelecionarProdutosPage> {
         ),
       );
 
-  FloatingActionButton _botaoConfirmarQuantidades() => FloatingActionButton(
-      onPressed: () {},
+  FloatingActionButton _botaoConfirmarQuantidades(BuildContext context) => FloatingActionButton(
+      onPressed: () => _onWillPop(context),
       child: Icon(
         Icons.check,
       ));
@@ -212,7 +231,7 @@ class _SelecionarProdutosPageState extends State<SelecionarProdutosPage> {
             if (produtosSelecionados.isNotEmpty && !editandoQuantidade) {
               return _botaoAdicionar();
             } else if (editandoQuantidade) {
-              return _botaoConfirmarQuantidades();
+              return _botaoConfirmarQuantidades(context);
             }
             return null;
           }(),

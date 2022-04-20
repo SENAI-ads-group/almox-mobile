@@ -1,3 +1,4 @@
+import 'package:almox_mobile/src/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:almox_mobile/src/pages/home/home_page.dart';
 import 'package:almox_mobile/src/routes/routes.dart';
@@ -13,7 +14,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'ALMOX',
+      debugShowCheckedModeBanner: false,
+      title: 'ALMOX MOBILE',
       theme: ThemeData(
         brightness: Brightness.light,
         primarySwatch: MaterialColor(
@@ -32,7 +34,7 @@ class MyApp extends StatelessWidget {
           },
         ),
       ),
-      home: HomePage(),
+      home: LoginPage(),
       routes: routes,
     );
   }

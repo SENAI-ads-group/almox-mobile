@@ -24,7 +24,7 @@ class _ResetPasswordState extends State<ResetPassword> {
       ),
       body: Container(
         padding: EdgeInsets.only(
-          top: 10,
+          top: 20,
           left: 40,
           right: 40,
         
@@ -38,7 +38,7 @@ class _ResetPasswordState extends State<ResetPassword> {
               child: Image.asset("assets/images/resetPassword.jpg"),
             ),
             SizedBox(
-              height: 20,
+              height: 10,
             ),
             Text(
               "Esqueceu sua Senha?",
@@ -62,7 +62,7 @@ class _ResetPasswordState extends State<ResetPassword> {
               textAlign: TextAlign.center,
             ),
             SizedBox(
-              height: 50,
+              height: 30,
             ),
                TextFormField(
                
@@ -70,7 +70,7 @@ class _ResetPasswordState extends State<ResetPassword> {
               decoration: InputDecoration(
                 labelText: "E-mail",
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.account_box_outlined),
+                prefixIcon: Icon(Icons.email_outlined),
                 labelStyle: TextStyle(
                   color: Colors.black38,
                   fontWeight: FontWeight.w400,

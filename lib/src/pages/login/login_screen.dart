@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 decoration: InputDecoration(
                   labelText: "Cpf",
                   border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.account_box_outlined),
+                  prefixIcon: Icon(Icons.article_outlined),
                      labelStyle: TextStyle(
                   color: Colors.black38,
                   fontWeight: FontWeight.w400,

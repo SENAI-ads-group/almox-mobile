@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 
-class ResetPassword extends StatelessWidget {
+
+class ResetPassword extends StatefulWidget {
   const ResetPassword({Key? key}) : super(key: key);
 
+   
+
+  @override
+  State<ResetPassword> createState() => _ResetPasswordState();
+}
+
+class _ResetPasswordState extends State<ResetPassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,9 +24,10 @@ class ResetPassword extends StatelessWidget {
       ),
       body: Container(
         padding: EdgeInsets.only(
-          top: 60,
+          top: 10,
           left: 40,
           right: 40,
+        
         ),
         color: Colors.white,
         child: ListView(
@@ -35,35 +44,64 @@ class ResetPassword extends StatelessWidget {
               "Esqueceu sua Senha?",
               style: TextStyle(
                 fontSize: 32,
+                color: Colors.blue,
                 fontWeight: FontWeight.w500,
               ),
+              textAlign: TextAlign.center,
             ),
             SizedBox(
               height: 10,
             ),
             Text(
-              'Por Favor informe seu E-mail',
+              'Preecha o campo abaixo para enviarmos um E-mail com as instruções de recuperação.',
               style: TextStyle(
                 fontSize: 16,
+                color: Colors.blue,
                 fontWeight: FontWeight.w400,
               ),
-            textAlign: TextAlign.center,
+              textAlign: TextAlign.center,
             ),
             SizedBox(
-              height: 10,
+              height: 50,
             ),
-            TextField(
+               TextFormField(
+               
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                 labelText: "E-mail",
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.account_box_outlined),
                 labelStyle: TextStyle(
-                  color: Colors.white,
+                  color: Colors.black38,
                   fontWeight: FontWeight.w400,
                   fontSize: 20,
                 ),
               ),
-              style: TextStyle(fontSize:20),
-            )
+              style: TextStyle(fontSize: 20, color: Colors.black),
+            ),
+            SizedBox(
+              height: 40,
+            ),
+            Container(
+              height: 60,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                gradient: const LinearGradient(
+                    colors: [Colors.blue, Colors.lightBlueAccent]),
+              ),
+              child: MaterialButton(
+                onPressed: () {},
+                child: const Text(
+                  "Enviar",
+                  style: TextStyle(
+                    fontSize: 25,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 20,)
           ],
         ),
       ),

@@ -1,20 +1,21 @@
-import 'package:almox_mobile/src/pages/login/login_novoAcesso.dart';
+
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:almox_mobile/src/routes/routes.dart';
-import 'package:almox_mobile/src/pages/login/login_page.dart';
 import 'package:almox_mobile/src/pages/login/login_reset-password.dart';
+import 'package:almox_mobile/src/pages/login/login_novo_acesso.dart';
 
 //import 'reset-password.page.dart';
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController _cpf = TextEditingController();
+  final TextEditingController _cpf = TextEditingController();
 
   String? _msgErroCpf;
 
@@ -45,9 +46,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: "CPF",
+                  labelText: "Cpf",
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.account_box_outlined),
+                     labelStyle: TextStyle(
+                  color: Colors.black38,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 20,
+                ),
                   errorText: _msgErroCpf,
                 ),
               ),
@@ -55,13 +61,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 25,
               ),
               TextFormField(
-                keyboardType: TextInputType.visiblePassword,
+                keyboardType: TextInputType.text,
+                 autofocus: true,
                 obscureText: true,
                 decoration: const InputDecoration(
                   labelText: "Senha",
+                  labelStyle: TextStyle(
+                  color: Colors.black38,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 20,
+                ),
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.lock),
                   suffixIcon: Icon(Icons.remove_red_eye),
+                     
                 ),
               ),
               const SizedBox(

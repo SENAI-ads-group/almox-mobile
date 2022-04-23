@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.almox_mobile">
+
+    <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="almox_mobile"
         android:name="${applicationName}"

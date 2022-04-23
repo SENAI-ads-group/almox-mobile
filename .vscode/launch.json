@@ -19,7 +19,8 @@
             "name": "almox_mobile (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "justMyCode": true
         }
-    ]
+    ],
 }

@@ -103,14 +103,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100),
-                  gradient: const LinearGradient(
-                      colors: [Colors.blue, Colors.lightBlueAccent]),
+                  gradient: const LinearGradient(colors: [Colors.blue, Colors.lightBlueAccent]),
                 ),
                 child: MaterialButton(
                   onPressed: () {
                     String cpf = _cpf.text;
                     if (GetUtils.isCpf(cpf)) {
                       print('CPF válido');
+                      Navigator.pushNamed(context, '/home');
                     } else {
                       setState(() {
                         _msgErroCpf = 'Cpf Inválido';

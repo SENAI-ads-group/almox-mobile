@@ -1,37 +1,71 @@
 import 'package:almox_mobile/src/model/grupo_model.dart';
 import 'package:almox_mobile/src/model/item_requisicao_model.dart';
 import 'package:almox_mobile/src/model/produto_model.dart';
+import 'package:almox_mobile/src/pages/erro_carregar_dados/erro_carregar_dados_page.dart';
+import 'package:almox_mobile/src/services/grupo_service.dart';
+import 'package:almox_mobile/src/services/produto_service.dart';
 import 'package:almox_mobile/src/widgets/card_produto/botoes_adicionar_remover.dart';
+import 'package:almox_mobile/src/pages/carregando_dados/carregando_dados_page.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 
 class SelecionarProdutosPage extends StatefulWidget {
-  const SelecionarProdutosPage({Key? key}) : super(key: key);
+  SelecionarProdutosPage({Key? key}) : super(key: key);
+
+  final ProdutoService produtoService = ProdutoService();
+  final GrupoService grupoService = GrupoService();
 
   @override
   State<SelecionarProdutosPage> createState() => _SelecionarProdutosPageState();
 }
 
 class _SelecionarProdutosPageState extends State<SelecionarProdutosPage> {
-  List<ProdutoModel> produtos = [
-    ProdutoModel(id: 1, descricao: 'Água Sanitária 5LT', grupo: GrupoModel(descricao: 'Material de Limpeza')),
-    ProdutoModel(id: 2, descricao: 'Detergente 500ml', grupo: GrupoModel(descricao: 'Material de Limpeza')),
-    ProdutoModel(id: 3, descricao: 'Máscara Descartável', grupo: GrupoModel(descricao: 'E.P.I.')),
-    ProdutoModel(id: 4, descricao: 'Luva Descartável', grupo: GrupoModel(descricao: 'E.P.I.')),
-  ];
+  List<GrupoModel> grupos = [];
+  List<ProdutoModel> produtos = [];
+  late Future<void> _produtosGruposFuture;
 
-  List<GrupoModel> grupos = [
-    GrupoModel(descricao: 'Material de Limpeza'),
-    GrupoModel(descricao: 'E.P.I.'),
-    GrupoModel(descricao: 'Embalagens'),
-    GrupoModel(descricao: 'Material de Escritório')
-  ];
+  Future<void> fetch() async {
+    produtos = await widget.produtoService.fetchProdutos();
+    grupos = await widget.grupoService.fetchGrupos();
+  }
 
-  List<ItemRequisicaoModel> itensRequisicao = [];
+  @override
+  void initState() {
+    _produtosGruposFuture = fetch();
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<void>(
+        future: _produtosGruposFuture,
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return CarregandoDadosPage(appBar: AppBar(title: Text('Adicionar Produto')), textoCarregando: 'Carregando Produtos...');
+            default:
+              if (snapshot.hasError) {
+                return ErroCarregarDadosPage(textoErro: 'Não foi possível carregar os produtos', tituloPagina: 'Adicionar Produto');
+              } else {
+                return _SelecionarProdutosWidget(produtos: produtos, grupos: grupos);
+              }
+          }
+        });
+  }
+}
+
+class _SelecionarProdutosWidget extends StatefulWidget {
+  final List<GrupoModel> grupos;
+  final List<ProdutoModel> produtos;
+
+  _SelecionarProdutosWidget({Key? key, required this.grupos, required this.produtos}) : super(key: key);
+
+  @override
+  State<_SelecionarProdutosWidget> createState() => __SelecionarProdutosWidgetState();
+}
+
+class __SelecionarProdutosWidgetState extends State<_SelecionarProdutosWidget> {
   List<ProdutoModel> produtosSelecionados = [];
-
-  bool editandoQuantidade = false;
 
   void _setProdutoSelecionado(ProdutoModel produto, bool? selecionado) {
     setState(() {
@@ -43,59 +77,24 @@ class _SelecionarProdutosPageState extends State<SelecionarProdutosPage> {
     });
   }
 
-  Future<bool> _onWillPop(BuildContext context) {
-    if (itensRequisicao.isNotEmpty) {
-      bool existeItemSemQuantidade = itensRequisicao.any((item) => item.quantidade <= 0);
-
-      if (existeItemSemQuantidade) {
-        AwesomeDialog(
-          context: context,
-          dialogType: DialogType.WARNING,
-          buttonsBorderRadius: BorderRadius.all(Radius.circular(2)),
-          headerAnimationLoop: false,
-          animType: AnimType.SCALE,
-          desc: 'Informe a quantidade dos produtos!',
-          showCloseIcon: true,
-          btnOkColor: Colors.green,
-          btnOkOnPress: () {},
-        ).show();
-        return Future.value(false);
-      }
-    }
-    Navigator.pop(context, produtosSelecionados);
-    return Future.value(false);
-  }
-
-  ListView _filtroGrupos() => ListView(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-        children: grupos
-            .map(
-              (g) => TextButton(
-                onPressed: () {},
-                child: Text(g.descricao,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    )),
-              ),
-            )
-            .toList(),
-      );
-
   PreferredSize _appBar(BuildContext context) => PreferredSize(
       child: AppBar(
           backgroundColor: Theme.of(context).primaryColor,
           title: Text('Adicionar Produto'),
-          leading: IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () {
-              _onWillPop(context);
-            },
-          ),
-          bottom: PreferredSize(
-            child: Expanded(child: _filtroGrupos()),
-            preferredSize: Size(MediaQuery.of(context).size.width, AppBar().preferredSize.height + 60),
+          leading: IconButton(icon: Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+          bottom: TabBar(
+            isScrollable: true,
+            tabs: widget.grupos
+                .map(
+                  (g) => Tab(
+                    child: Text(g.descricao,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        )),
+                  ),
+                )
+                .toList(),
           )),
       preferredSize: Size(MediaQuery.of(context).size.width, AppBar().preferredSize.height + 50));
 
@@ -117,124 +116,72 @@ class _SelecionarProdutosPageState extends State<SelecionarProdutosPage> {
     );
   }
 
-  void _decrementarQuantidadeItemRequisicao(int indexItemASerDecrementado) {
-    setState(() {
-      itensRequisicao.asMap().keys.toList().forEach((index) {
-        if (index == indexItemASerDecrementado) {
-          ItemRequisicaoModel item = itensRequisicao.elementAt(index);
-          item.quantidade = item.quantidade - 1;
-        }
-      });
-    });
-  }
-
-  void _incrementarQuantidadeItemRequisicao(int indexItemASerIncrementado) {
-    setState(() {
-      itensRequisicao.asMap().keys.toList().forEach((index) {
-        if (index == indexItemASerIncrementado) {
-          ItemRequisicaoModel item = itensRequisicao.elementAt(index);
-          item.quantidade = item.quantidade + 1;
-        }
-      });
-    });
-  }
-
-  Card _cardProduto(ProdutoModel produto) {
-    if (!editandoQuantidade) {
-      return Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)), side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
-        child: ListTile(
-          onTap: () => _setProdutoSelecionado(produto, !produtosSelecionados.contains(produto)),
-          title: Text(produto.descricao),
-          subtitle: Text(produto.grupo.descricao),
-          trailing: _checkbox(produto),
-        ),
+  Column _listagemProdutos(GrupoModel grupo) => Column(
+        children: [
+          Expanded(
+            child: ListView(
+              children: widget.produtos
+                  .where((ProdutoModel produto) => produto.grupo.id == grupo.id)
+                  .map((ProdutoModel produto) => Card(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10)), side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
+                        child: ListTile(
+                          onTap: () => _setProdutoSelecionado(produto, !produtosSelecionados.contains(produto)),
+                          title: Text(produto.descricao),
+                          subtitle: Text(produto.grupo.descricao),
+                          trailing: _checkbox(produto),
+                        ),
+                      ))
+                  .toList(),
+            ),
+          ),
+        ],
       );
-    } else {
-      int indexItem = itensRequisicao.indexWhere((item) => item.produto.id == produto.id);
-      ItemRequisicaoModel itemRequisicao = itensRequisicao.elementAt(indexItem);
-      TextEditingController quantidadeTextFieldController = TextEditingController(text: "${itemRequisicao.quantidade}");
-      FocusNode focusNode = FocusNode();
-      focusNode.addListener((() {
-        if (focusNode.hasFocus) {
-          quantidadeTextFieldController.selection = TextSelection(baseOffset: 0, extentOffset: quantidadeTextFieldController.text.length);
-        }
-      }));
 
-      return Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)), side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
-        child: ListTile(
-          title: Text(produto.descricao),
-          subtitle: Text(produto.grupo.descricao),
-          trailing: BotoesAdicionarRemoverProduto(
-              quantidadeTextField: TextField(
-                focusNode: focusNode,
-                controller: quantidadeTextFieldController,
-                onSubmitted: (String valor) {
-                  setState(() {
-                    itemRequisicao.quantidade = double.parse(valor);
-                  });
-                },
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-              ),
-              onRemoverPressed: () => _decrementarQuantidadeItemRequisicao(indexItem),
-              onAdicionarPressed: () => _incrementarQuantidadeItemRequisicao(indexItem)),
-        ),
-      );
-    }
-  }
+  ListView _chipsProdutosSelecionados() => ListView(
+      scrollDirection: Axis.horizontal,
+      children: produtosSelecionados
+          .map(
+            (ProdutoModel produto) => Padding(
+                padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                child: Chip(
+                  label: Text(produto.descricao),
+                )),
+          )
+          .toList());
 
   FloatingActionButton _botaoAdicionar() => FloatingActionButton(
         backgroundColor: Color.fromRGBO(200, 230, 201, 1),
-        onPressed: () {
-          setState(() {
-            editandoQuantidade = true;
-            itensRequisicao = produtosSelecionados.map((produtoSelecionado) => ItemRequisicaoModel(produto: produtoSelecionado)).toList();
-            produtos = produtosSelecionados;
-          });
-        },
+        onPressed: () => Navigator.pop(context, produtosSelecionados),
         child: Icon(
           Icons.add_outlined,
           color: Color.fromRGBO(37, 96, 41, 1),
         ),
       );
 
-  FloatingActionButton _botaoConfirmarQuantidades(BuildContext context) => FloatingActionButton(
-      onPressed: () => _onWillPop(context),
-      child: Icon(
-        Icons.check,
-      ));
-
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () => _onWillPop(context),
-        child: Scaffold(
-          appBar: _appBar(context),
-          body: Container(
+    return DefaultTabController(
+      length: widget.grupos.length,
+      child: Scaffold(
+        appBar: _appBar(context),
+        body: Container(
             color: Color.fromRGBO(245, 245, 245, 1),
-            child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: ListView(
-                        children: produtos.map((ProdutoModel produto) => _cardProduto(produto)).toList(),
-                      ),
-                    ),
-                  ],
-                )),
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: () {
-            if (produtosSelecionados.isNotEmpty && !editandoQuantidade) {
-              return _botaoAdicionar();
-            } else if (editandoQuantidade) {
-              return _botaoConfirmarQuantidades(context);
-            }
-            return null;
-          }(),
-        ));
+            child: Column(
+              children: [
+                Flexible(
+                    child: produtosSelecionados.isEmpty
+                        ? SizedBox(height: 16)
+                        : Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0), child: SizedBox(height: 60, child: _chipsProdutosSelecionados()))),
+                Expanded(
+                    child: Padding(
+                        padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        child: TabBarView(children: widget.grupos.map((GrupoModel grupo) => _listagemProdutos(grupo)).toList())))
+              ],
+            )),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: produtosSelecionados.isNotEmpty ? _botaoAdicionar() : null,
+      ),
+    );
   }
 }

@@ -1,0 +1,1 @@
+enum StatusRequisicao { ATENDIMENTO, ENTREGUE, CANCELADA }

@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class OperadorPage extends PaginaNavegacao {
-  OperadorPage() : super(child: _OperadorPage(), botaoNavegacao: BotaoNavegacaoOperador());
+  OperadorPage()
+      : super(child: _OperadorPage(), botaoNavegacao: BotaoNavegacaoOperador());
 }
 
 class _OperadorPage extends StatelessWidget {

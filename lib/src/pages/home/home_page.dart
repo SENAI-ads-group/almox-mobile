@@ -20,6 +20,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    homeBloc.indexPaginaAtual = 0;
+    homeBloc.setBotaoAcao(
+        floatingActionButton: FloatingActionButton(
+      onPressed: () => Navigator.pushNamed(context, '/criarRequisicao'),
+      child: Icon(Icons.add),
+    ));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

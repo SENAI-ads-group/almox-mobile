@@ -1,4 +1,3 @@
-
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -46,14 +45,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: "Cpf",
+                  labelText: "CPF",
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.article_outlined),
-                     labelStyle: TextStyle(
-                  color: Colors.black38,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 20,
-                ),
+                  labelStyle: TextStyle(
+                    color: Colors.black38,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 20,
+                  ),
                   errorText: _msgErroCpf,
                 ),
               ),
@@ -62,19 +61,18 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               TextFormField(
                 keyboardType: TextInputType.text,
-                 autofocus: true,
+                autofocus: true,
                 obscureText: true,
                 decoration: const InputDecoration(
                   labelText: "Senha",
                   labelStyle: TextStyle(
-                  color: Colors.black38,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 20,
-                ),
+                    color: Colors.black38,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 20,
+                  ),
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.lock),
                   suffixIcon: Icon(Icons.remove_red_eye),
-                     
                 ),
               ),
               const SizedBox(
@@ -99,37 +97,27 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 25,
               ),
               Container(
-                height: 60,
+                height: 50,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100),
-                  gradient: const LinearGradient(
-                      colors: [Colors.blue, Colors.lightBlueAccent]),
+                  gradient: LinearGradient(colors: [Theme.of(context).primaryColor, Colors.blue]),
                 ),
                 child: MaterialButton(
                   onPressed: () {
-                    String cpf = _cpf.text;
-                    if (GetUtils.isCpf(cpf)) {
-                      print('CPF válido');
+                    _msgErroCpf = null;
+                    if (GetUtils.isCpf(_cpf.text)) {
+                      Navigator.pushNamed(context, '/home');
                     } else {
                       setState(() {
-                        _msgErroCpf = 'Cpf Inválido';
+                        _msgErroCpf = 'CPF Inválido';
                       });
-
-                      print('CPF inválido');
-                      showAlertDialog1(BuildContext context) {
-                        // configura o button
-                        Widget okButton = FlatButton(
-                          child: Text("OK"),
-                          onPressed: () {},
-                        );
-                      }
                     }
                   },
                   child: const Text(
                     "LOGIN",
                     style: TextStyle(
-                      fontSize: 25,
+                      fontSize: 20,
                       color: Colors.white,
                     ),
                   ),

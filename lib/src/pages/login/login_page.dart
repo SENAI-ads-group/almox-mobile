@@ -6,22 +6,14 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Flutter Login UI",
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text(
+          "ALMOX MOBILE",
+        ),
       ),
-      home: Scaffold(
-          appBar: AppBar(
-            centerTitle: true,
-            title: const Text(
-              "ALMOX MOBILE",
-            ),
-          ),
-         
-          body: LoginScreen(),
-          ),
+      body: LoginScreen(),
     );
   }
 }

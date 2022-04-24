@@ -1,5 +1,4 @@
 import 'package:almox_mobile/src/model/status_requisicao.dart';
-import 'package:almox_mobile/src/pages/criar_requisicao/criar_requisicao_page.dart';
 import 'package:almox_mobile/src/pages/home/home_bloc.dart';
 import 'package:almox_mobile/src/widgets/botoes_navegacao/botao_navegacao_requisicoes.widget.dart';
 import 'package:flutter/material.dart';
@@ -11,10 +10,7 @@ import '../../model/requisicao_model.dart';
 class ListagemRequisicoesPage extends PaginaNavegacao {
   final HomeBloc homeBloc = HomeBloc();
 
-  ListagemRequisicoesPage()
-      : super(
-            child: _ListagemRequisicoesPage(),
-            botaoNavegacao: BotaoNavegacaoRequisicoes());
+  ListagemRequisicoesPage() : super(child: _ListagemRequisicoesPage(), botaoNavegacao: BotaoNavegacaoRequisicoes());
 }
 
 class _ListagemRequisicoesPage extends StatelessWidget {
@@ -42,10 +38,7 @@ class _ListagemRequisicoesPage extends StatelessWidget {
             children: [
               Expanded(
                 child: ListView(
-                  children: requisicoes
-                      .map((RequisicaoModel requisicao) =>
-                          _cardRequisicao(requisicao))
-                      .toList(),
+                  children: requisicoes.map((RequisicaoModel requisicao) => _cardRequisicao(requisicao)).toList(),
                 ),
               ),
             ],
@@ -87,9 +80,7 @@ class _ListagemRequisicoesPage extends StatelessWidget {
 
   Card _cardRequisicao(RequisicaoModel requisicao) {
     return Card(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(15)),
-          side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15)), side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
       child: ListTile(
         //horizontalTitleGap: 16.0,
         title: Text(

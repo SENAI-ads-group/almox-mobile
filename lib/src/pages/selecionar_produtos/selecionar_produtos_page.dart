@@ -42,7 +42,7 @@ class _SelecionarProdutosPageState extends State<SelecionarProdutosPage> {
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
-              return CarregandoDadosPage(appBar: AppBar(title: Text('Adicionar Produto')), textoCarregando: 'Carregando Produtos...');
+              return CarregandoDadosPage(textoCarregando: 'Carregando Produtos...', tituloPagina: 'Adicionar Produto');
             default:
               if (snapshot.hasError) {
                 return ErroCarregarDadosPage(textoErro: 'Não foi possível carregar os produtos', tituloPagina: 'Adicionar Produto');

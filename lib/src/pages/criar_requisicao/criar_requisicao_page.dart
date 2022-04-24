@@ -1,7 +1,6 @@
 import 'package:almox_mobile/src/model/item_requisicao_model.dart';
 import 'package:almox_mobile/src/model/produto_model.dart';
 import 'package:flutter/material.dart';
-import 'package:almox_mobile/src/widgets/botao_acao_widget.dart';
 import 'package:almox_mobile/src/widgets/card_produto/botoes_adicionar_remover.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 
@@ -15,39 +14,42 @@ class CriarRequisicaoPage extends StatefulWidget {
 class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
   List<ItemRequisicaoModel> itensSelecionados = [];
 
+  _avisoInformeQuantidades() => AwesomeDialog(
+        context: context,
+        dialogType: DialogType.WARNING,
+        buttonsBorderRadius: BorderRadius.all(Radius.circular(2)),
+        headerAnimationLoop: false,
+        animType: AnimType.SCALE,
+        desc: 'Informe a quantidade dos produtos!',
+        showCloseIcon: true,
+        btnOkColor: Colors.green,
+        btnOkOnPress: () {},
+      ).show();
+
   Future<bool> _onWillPop(BuildContext context) {
     if (itensSelecionados.isNotEmpty) {
       bool existeItemSemQuantidade = itensSelecionados.any((item) => item.quantidade <= 0);
 
       if (existeItemSemQuantidade) {
-        AwesomeDialog(
-          context: context,
-          dialogType: DialogType.WARNING,
-          buttonsBorderRadius: BorderRadius.all(Radius.circular(2)),
-          headerAnimationLoop: false,
-          animType: AnimType.SCALE,
-          desc: 'Informe a quantidade dos produtos!',
-          showCloseIcon: true,
-          btnOkColor: Colors.green,
-          btnOkOnPress: () {},
-        ).show();
+        _avisoInformeQuantidades();
         return Future.value(false);
       }
     }
     return Future.value(true);
   }
 
+  _pesquisarProdutos(BuildContext context) async {
+    List<ProdutoModel>? produtosSelecionadosNaPesquisa = await Navigator.pushNamed(context, '/selecionarProdutos') as List<ProdutoModel>?;
+
+    setState(() {
+      itensSelecionados.addAll((produtosSelecionadosNaPesquisa ?? [])
+          .where((ProdutoModel produto) => !itensSelecionados.any((i) => i.produto.id == produto.id))
+          .map((ProdutoModel produto) => ItemRequisicaoModel(produto: produto, quantidade: 0)));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    _pesquisarProdutos() async {
-      List<ProdutoModel>? produtosSelecionadosNaPesquisa = await Navigator.pushNamed(context, '/selecionarProdutos') as List<ProdutoModel>?;
-
-      setState(() {
-        itensSelecionados
-            .addAll((produtosSelecionadosNaPesquisa ?? []).map((ProdutoModel produto) => ItemRequisicaoModel(produto: produto, quantidade: 0)));
-      });
-    }
-
     void _decrementarQuantidadeItemRequisicao(int indexItemASerDecrementado) {
       setState(() {
         itensSelecionados.asMap().keys.toList().forEach((index) {
@@ -61,7 +63,9 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
                 headerAnimationLoop: false,
                 animType: AnimType.SCALE,
                 desc: 'Remover Item!',
-                showCloseIcon: true,
+                showCloseIcon: false,
+                dismissOnTouchOutside: false,
+                dismissOnBackKeyPress: false,
                 btnOkText: 'Sim',
                 btnOkColor: Colors.green,
                 btnOkOnPress: () {
@@ -139,7 +143,7 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
                     shape: MaterialStateProperty.all(RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0),
                 ))),
-                onPressed: _pesquisarProdutos,
+                onPressed: () async => await _pesquisarProdutos(context),
               ),
             ),
             Container(
@@ -181,8 +185,34 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
               ),
             ),
             floatingActionButton: FloatingActionButton(
-              onPressed: (() => {}),
-              child: Icon(Icons.check),
+              backgroundColor: Color.fromRGBO(200, 230, 201, 1),
+              child: Icon(
+                Icons.check,
+                color: Color.fromRGBO(37, 96, 41, 1),
+              ),
+              onPressed: () {
+                if (itensSelecionados.isNotEmpty) {
+                  bool existeItemSemQuantidade = itensSelecionados.any((item) => item.quantidade <= 0);
+
+                  if (existeItemSemQuantidade) {
+                    _avisoInformeQuantidades();
+                  } else {
+                    AwesomeDialog(
+                      context: context,
+                      dialogType: DialogType.SUCCES,
+                      buttonsBorderRadius: BorderRadius.all(Radius.circular(2)),
+                      headerAnimationLoop: false,
+                      animType: AnimType.SCALE,
+                      desc: 'Requisição criada com sucesso!',
+                      showCloseIcon: true,
+                      btnOkColor: Colors.green,
+                      btnOkOnPress: () {
+                        Navigator.pop(context);
+                      },
+                    ).show();
+                  }
+                }
+              },
             )));
   }
 }

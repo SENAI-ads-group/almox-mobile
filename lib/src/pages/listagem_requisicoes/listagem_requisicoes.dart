@@ -24,8 +24,12 @@ class _ListagemRequisicoesPage extends StatelessWidget {
       if (homeBloc.indexPaginaAtual == 0) {
         homeBloc.setBotaoAcao(
             floatingActionButton: FloatingActionButton(
+          backgroundColor: Color.fromRGBO(200, 230, 201, 1),
           onPressed: () => Navigator.pushNamed(context, '/criarRequisicao'),
-          child: Icon(Icons.add),
+          child: Icon(
+            Icons.add_outlined,
+            color: Color.fromRGBO(37, 96, 41, 1),
+          ),
         ));
       }
     });
@@ -50,15 +54,15 @@ class _ListagemRequisicoesPage extends StatelessWidget {
     RequisicaoModel(
         dataRequisicao: "20/12/2021",
         departamento: "Financeiro",
-        nome_almoxarife: "Marcos Aurélio",
-        nome_requisitante: "Mathias Conceição",
-        statusRequisicao: StatusRequisicao.ATENDIMENTO),
+        nomeAlmoxarife: "Marcos Aurélio",
+        nomeRequisitante: "Mathias Conceição",
+        statusRequisicao: StatusRequisicao.emAtendimento),
     RequisicaoModel(
         dataRequisicao: "12/03/2022",
         departamento: "Diretoria",
-        nome_almoxarife: "Alexandre Nogueira",
-        nome_requisitante: "Eduardo Mansur",
-        statusRequisicao: StatusRequisicao.ENTREGUE)
+        nomeAlmoxarife: "Alexandre Nogueira",
+        nomeRequisitante: "Eduardo Mansur",
+        statusRequisicao: StatusRequisicao.entregue)
   ];
 
   ListView _filtroStatus() => ListView(
@@ -68,7 +72,7 @@ class _ListagemRequisicoesPage extends StatelessWidget {
             .map(
               (g) => TextButton(
                 onPressed: () {},
-                child: Text(g.statusRequisicao.name,
+                child: Text(g.statusRequisicao.descricao,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -81,23 +85,25 @@ class _ListagemRequisicoesPage extends StatelessWidget {
   Card _cardRequisicao(RequisicaoModel requisicao) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15)), side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
-      child: ListTile(
-        //horizontalTitleGap: 16.0,
-        title: Text(
-          requisicao.departamento + "\n" + "" + requisicao.dataRequisicao,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+      child: Padding(
+        padding: EdgeInsets.all(5),
+        child: ListTile(
+          title: Text(
+            requisicao.departamento,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(requisicao.dataRequisicao),
+              Text(requisicao.nomeAlmoxarife),
+            ],
+          ),
+          trailing: Text(requisicao.statusRequisicao.descricao,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              )),
         ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(requisicao.dataRequisicao.toString()),
-            Text(requisicao.nome_almoxarife.toString()),
-          ],
-        ),
-        trailing: Text("" + requisicao.statusRequisicao.name,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            )),
       ),
     );
   }

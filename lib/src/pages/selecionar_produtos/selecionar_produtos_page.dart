@@ -77,26 +77,39 @@ class __SelecionarProdutosWidgetState extends State<_SelecionarProdutosWidget> {
     });
   }
 
-  PreferredSize _appBar(BuildContext context) => PreferredSize(
-      child: AppBar(
-          backgroundColor: Theme.of(context).primaryColor,
-          title: Text('Adicionar Produto'),
-          leading: IconButton(icon: Icon(Icons.close), onPressed: () => Navigator.pop(context)),
-          bottom: TabBar(
-            isScrollable: true,
-            tabs: widget.grupos
-                .map(
-                  (g) => Tab(
-                    child: Text(g.descricao,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        )),
-                  ),
-                )
-                .toList(),
-          )),
-      preferredSize: Size(MediaQuery.of(context).size.width, AppBar().preferredSize.height + 50));
+  PreferredSize _appBar(BuildContext context) {
+    List<Tab> _tabs = [
+      Tab(
+        child: Text('Todos Grupos',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            )),
+      )
+    ];
+    _tabs.addAll(widget.grupos
+        .map(
+          (g) => Tab(
+            child: Text(g.descricao,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                )),
+          ),
+        )
+        .toList());
+
+    return PreferredSize(
+        child: AppBar(
+            backgroundColor: Theme.of(context).primaryColor,
+            title: Text('Adicionar Produto'),
+            leading: IconButton(icon: Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+            bottom: TabBar(
+              isScrollable: true,
+              tabs: _tabs,
+            )),
+        preferredSize: Size(MediaQuery.of(context).size.width, AppBar().preferredSize.height + 50));
+  }
 
   Widget _checkbox(ProdutoModel produto) {
     bool isChecked = produtosSelecionados.contains(produto);
@@ -116,27 +129,49 @@ class __SelecionarProdutosWidgetState extends State<_SelecionarProdutosWidget> {
     );
   }
 
-  Column _listagemProdutos(GrupoModel grupo) => Column(
-        children: [
-          Expanded(
-            child: ListView(
-              children: widget.produtos
-                  .where((ProdutoModel produto) => produto.grupo.id == grupo.id)
-                  .map((ProdutoModel produto) => Card(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)), side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
-                        child: ListTile(
-                          onTap: () => _setProdutoSelecionado(produto, !produtosSelecionados.contains(produto)),
-                          title: Text(produto.descricao),
-                          subtitle: Text(produto.grupo.descricao),
-                          trailing: _checkbox(produto),
-                        ),
-                      ))
-                  .toList(),
-            ),
-          ),
-        ],
-      );
+  Widget _listagemProdutos(GrupoModel? grupo) {
+    List<Widget> _cardsProdutos = widget.produtos
+        .where((ProdutoModel produto) => grupo == null ? true : produto.grupo.id == grupo.id)
+        .map((ProdutoModel produto) => Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)), side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
+              child: ListTile(
+                onTap: () => _setProdutoSelecionado(produto, !produtosSelecionados.contains(produto)),
+                title: Text(produto.descricao),
+                subtitle: Text(produto.grupo.descricao),
+                trailing: _checkbox(produto),
+              ),
+            ))
+        .toList();
+
+    return _cardsProdutos.isEmpty
+        ? Transform.scale(
+            scale: 1.5,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Center(
+                  child: Icon(
+                    Icons.warning,
+                    color: Colors.orangeAccent,
+                    size: 50,
+                  ),
+                ),
+                Center(
+                  child: Text('Nenhum produto encontrado!'),
+                )
+              ],
+            ))
+        : Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  children: _cardsProdutos,
+                ),
+              ),
+            ],
+          );
+  }
 
   ListView _chipsProdutosSelecionados() => ListView(
       scrollDirection: Axis.horizontal,
@@ -161,8 +196,11 @@ class __SelecionarProdutosWidgetState extends State<_SelecionarProdutosWidget> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> _tabs = [_listagemProdutos(null)];
+    _tabs.addAll(widget.grupos.map((GrupoModel grupo) => _listagemProdutos(grupo)).toList());
+
     return DefaultTabController(
-      length: widget.grupos.length,
+      length: widget.grupos.length + 1,
       child: Scaffold(
         appBar: _appBar(context),
         body: Container(
@@ -173,10 +211,7 @@ class __SelecionarProdutosWidgetState extends State<_SelecionarProdutosWidget> {
                     child: produtosSelecionados.isEmpty
                         ? SizedBox(height: 16)
                         : Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0), child: SizedBox(height: 60, child: _chipsProdutosSelecionados()))),
-                Expanded(
-                    child: Padding(
-                        padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
-                        child: TabBarView(children: widget.grupos.map((GrupoModel grupo) => _listagemProdutos(grupo)).toList())))
+                Expanded(child: Padding(padding: EdgeInsets.fromLTRB(16, 0, 16, 16), child: TabBarView(children: _tabs)))
               ],
             )),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

@@ -1,10 +1,11 @@
+import 'package:almox_mobile/src/services/autenticacao_service.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:almox_mobile/src/pages/login/login_reset-password.dart';
 import 'package:almox_mobile/src/pages/login/login_novo_acesso.dart';
-import 'package:get/get_utils/src/get_utils/get_utils.dart';
 import 'package:validatorless/validatorless.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 
 //import 'reset-password.page.dart';
 class LoginScreen extends StatefulWidget {
@@ -15,24 +16,132 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _cpf = TextEditingController();
+  final AutenticacaoService _autenticacaoService = AutenticacaoService();
 
   final _cpfEC = TextEditingController();
   final _passwordEC = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  String? _msgErroCpf;
+  bool realizandoLogin = false;
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _cpfEC.dispose();
     _passwordEC.dispose();
     super.dispose();
   }
 
+  _onRealizarLogin() async {
+    var formValid = _formKey.currentState?.validate() ?? false;
+
+    final _snackbarCarregando = SnackBar(
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: const [
+          Text('Realizando login'),
+          CircularProgressIndicator(),
+        ],
+      ),
+    );
+
+    final _snackbarSucesso = SnackBar(
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: const [
+          Text('Login com suceso!'),
+          Icon(Icons.check, color: Colors.white),
+        ],
+      ),
+      duration: Duration(milliseconds: 350),
+      backgroundColor: Colors.green,
+    );
+
+    final _snackbarLoginInvalido = SnackBar(
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: const [Text('Usuário ou senha inválido'), Icon(Icons.error)],
+      ),
+      backgroundColor: Colors.red,
+    );
+
+    final _snackbarErro = SnackBar(
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: const [Text('Não foi possível realizar o login'), Icon(Icons.error)],
+      ),
+      backgroundColor: Colors.red,
+    );
+
+    if (formValid && !realizandoLogin) {
+      setState(() => realizandoLogin = true);
+      ScaffoldMessenger.of(context).showSnackBar(_snackbarCarregando);
+      try {
+        FocusManager.instance.primaryFocus?.unfocus();
+        final loginRealizadoComSucesso = await _autenticacaoService.login(usuario: _cpfEC.text, senha: _passwordEC.text);
+
+        setState(() => realizandoLogin = false);
+        if (loginRealizadoComSucesso) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+
+          ScaffoldMessenger.of(context).showSnackBar(_snackbarSucesso);
+          Navigator.pushNamed(context, '/home');
+          _cpfEC.clear();
+          _passwordEC.clear();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(_snackbarLoginInvalido);
+        }
+      } catch (e) {
+        setState(() => realizandoLogin = false);
+        ScaffoldMessenger.of(context).showSnackBar(_snackbarErro);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    TextFormField _campoLoginOperador() => TextFormField(
+          controller: _cpfEC,
+          validator: Validatorless.multiple([
+            Validatorless.required('Preencha o campo CPF'),
+            Validatorless.cpf('CPF inválido'),
+          ]),
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            CpfInputFormatter(),
+          ],
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            labelText: "CPF",
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.article_outlined),
+            labelStyle: TextStyle(
+              color: Colors.black38,
+              fontWeight: FontWeight.w400,
+              fontSize: 20,
+            ),
+          ),
+        );
+
+    TextFormField _campoSenha() => TextFormField(
+          controller: _passwordEC,
+          keyboardType: TextInputType.text,
+          validator: Validatorless.multiple([Validatorless.required('Preecha o campo senha')]),
+          autofocus: true,
+          obscureText: true,
+          decoration: const InputDecoration(
+            labelText: "Senha",
+            labelStyle: TextStyle(
+              color: Colors.black38,
+              fontWeight: FontWeight.w400,
+              fontSize: 20,
+            ),
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.lock),
+            suffixIcon: Icon(Icons.remove_red_eye),
+          ),
+        );
+
     return Padding(
       padding: const EdgeInsets.all(30),
       child: Form(
@@ -52,44 +161,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(
                   height: 25,
                 ),
-                TextFormField(
-                  controller: _cpf,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    CpfInputFormatter(),
-                  ],
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: "CPF",
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.article_outlined),
-                    labelStyle: TextStyle(
-                      color: Colors.black38,
-                      fontWeight: FontWeight.w400,
-                      fontSize: 20,
-                    ),
-                    errorText: _msgErroCpf,
-                  ),
-                ),
+                _campoLoginOperador(),
                 const SizedBox(
                   height: 25,
                 ),
-                TextFormField(
-                  keyboardType: TextInputType.text,
-                  autofocus: true,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: "Senha",
-                    labelStyle: TextStyle(
-                      color: Colors.black38,
-                      fontWeight: FontWeight.w400,
-                      fontSize: 20,
-                    ),
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock),
-                    suffixIcon: Icon(Icons.remove_red_eye),
-                  ),
-                ),
+                _campoSenha(),
                 const SizedBox(
                   height: 5,
                 ),
@@ -119,16 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       gradient: LinearGradient(colors: [Theme.of(context).primaryColor, Colors.blue]),
                     ),
                     child: MaterialButton(
-                        onPressed: () {
-                          _msgErroCpf = null;
-                          if (GetUtils.isCpf(_cpf.text)) {
-                            Navigator.pushNamed(context, '/home');
-                          } else {
-                            setState(() {
-                              _msgErroCpf = 'CPF Inválido';
-                            });
-                          }
-                        },
+                        onPressed: _onRealizarLogin,
                         child: const Text(
                           "LOGIN",
                           style: TextStyle(

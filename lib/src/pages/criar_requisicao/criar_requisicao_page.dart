@@ -135,14 +135,8 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
             Expanded(
               child: ElevatedButton.icon(
                 icon: Icon(Icons.add),
-                label: Text(
-                  'Incluir',
-                  style: TextStyle(fontSize: 18),
-                ),
-                style: ButtonStyle(
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.0),
-                ))),
+                label: Text('Incluir', style: TextStyle(fontSize: 18)),
+                style: ButtonStyle(shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)))),
                 onPressed: () async => await _pesquisarProdutos(context),
               ),
             ),

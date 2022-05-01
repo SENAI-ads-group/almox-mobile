@@ -1,13 +1,10 @@
 import 'package:almox_mobile/src/model/grupo_model.dart';
-import 'package:almox_mobile/src/model/item_requisicao_model.dart';
 import 'package:almox_mobile/src/model/produto_model.dart';
 import 'package:almox_mobile/src/pages/erro_carregar_dados/erro_carregar_dados_page.dart';
 import 'package:almox_mobile/src/services/grupo_service.dart';
 import 'package:almox_mobile/src/services/produto_service.dart';
-import 'package:almox_mobile/src/widgets/card_produto/botoes_adicionar_remover.dart';
 import 'package:almox_mobile/src/pages/carregando_dados/carregando_dados_page.dart';
 import 'package:flutter/material.dart';
-import 'package:awesome_dialog/awesome_dialog.dart';
 
 class SelecionarProdutosPage extends StatefulWidget {
   SelecionarProdutosPage({Key? key}) : super(key: key);

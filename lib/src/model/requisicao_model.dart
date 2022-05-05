@@ -14,3 +14,18 @@ class RequisicaoModel {
       required this.nomeRequisitante,
       required this.statusRequisicao});
 }
+
+class CriarRequisicao {
+  final String idOperadorAlmoxarife;
+  final String idDepartamento;
+  final List<CriarRequisicaoItem> itens;
+
+  CriarRequisicao({required this.idOperadorAlmoxarife, required this.idDepartamento, required this.itens});
+}
+
+class CriarRequisicaoItem {
+  final String idProduto;
+  final num quantidade;
+
+  CriarRequisicaoItem({required this.idProduto, required this.quantidade});
+}

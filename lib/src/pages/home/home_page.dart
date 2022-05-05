@@ -25,8 +25,12 @@ class _HomePageState extends State<HomePage> {
     homeBloc.indexPaginaAtual = 0;
     homeBloc.setBotaoAcao(
         floatingActionButton: FloatingActionButton(
+      backgroundColor: Color.fromRGBO(200, 230, 201, 1),
       onPressed: () => Navigator.pushNamed(context, '/criarRequisicao'),
-      child: Icon(Icons.add),
+      child: Icon(
+        Icons.add_outlined,
+        color: Color.fromRGBO(37, 96, 41, 1),
+      ),
     ));
   }
 

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:almox_mobile/src/services/autenticacao_service.dart';
 import 'package:http/http.dart' as http;
@@ -15,6 +14,8 @@ Future<Map<String, String>?> _configureHeaders(Map<String, String>? headers) asy
     String accessToken = await _autenticacaoService.accessToken;
     finalHeaders["Authorization"] = 'Bearer $accessToken';
   }
+  if (finalHeaders["Content-Type"] == null) finalHeaders["Content-Type"] = "application/json";
+
   return finalHeaders;
 }
 

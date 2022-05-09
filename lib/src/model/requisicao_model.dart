@@ -28,4 +28,9 @@ class CriarRequisicaoItem {
   final num quantidade;
 
   CriarRequisicaoItem({required this.idProduto, required this.quantidade});
+
+  Map toJson() => {
+        'idProduto': idProduto,
+        'quantidade': quantidade,
+      };
 }

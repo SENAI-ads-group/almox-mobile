@@ -1,5 +1,4 @@
 import 'package:almox_mobile/src/model/produto_model.dart';
-import 'package:almox_mobile/src/model/produto_model.dart';
 
 class ItemRequisicaoModel {
   int? id;

@@ -23,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
   bool _carregando = false;
+  bool _verificouToken = false;
 
   @override
   void dispose() {
@@ -86,8 +87,26 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  _checkarToken() async {
+    if (!_verificouToken) {
+      try {
+        setState(() => _carregando = true);
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        bool isTokenValido = await _autenticacaoService.isTokenValido();
+        if (isTokenValido) Navigator.pushReplacementNamed(context, '/home');
+      } finally {
+        setState(() {
+          _carregando = false;
+          _verificouToken = true;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    _checkarToken();
+
     final _campoLoginOperador = TextFormField(
       controller: _cpfEC,
       validator: Validatorless.multiple([

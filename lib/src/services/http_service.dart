@@ -6,7 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final AutenticacaoService _autenticacaoService = AutenticacaoService();
 
-Uri _parseUrl(String url, [Map<String, dynamic>? queryParameters]) => Uri.http("${dotenv.env['API_URL']}", url, queryParameters);
+Uri parseUrl(String url, [Map<String, dynamic>? queryParameters]) => Uri.http("${dotenv.env['API_URL']}", url, queryParameters);
 
 Future<Map<String, String>?> _configureHeaders(Map<String, String>? headers) async {
   final Map<String, String> finalHeaders = headers == null ? {} : {...headers};
@@ -21,7 +21,7 @@ Future<Map<String, String>?> _configureHeaders(Map<String, String>? headers) asy
 
 Future<http.Response> get(String url, {Map<String, String>? headers, Map<String, dynamic>? queryParameters}) async => http
     .get(
-      _parseUrl(url, queryParameters),
+      parseUrl(url, queryParameters),
       headers: await _configureHeaders(headers),
     )
     .timeout(
@@ -32,7 +32,7 @@ Future<http.Response> get(String url, {Map<String, String>? headers, Map<String,
 Future<http.Response> post(String url, {Map<String, String>? headers, Object? body, Encoding? encoding}) async {
   return http
       .post(
-        _parseUrl(url),
+        parseUrl(url),
         headers: await _configureHeaders(headers),
         body: body,
         encoding: encoding,

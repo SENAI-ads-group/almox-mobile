@@ -1,8 +1,8 @@
-import 'dart:io';
 import 'dart:convert';
 
 import 'package:almox_mobile/src/services/configuracao_service.dart';
 import 'package:almox_mobile/src/services/http_service.dart' as _http;
+import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AutenticacaoService {
@@ -34,8 +34,22 @@ class AutenticacaoService {
     return response.statusCode == 200;
   }
 
+  Future<bool> isTokenValido() async {
+    final Map<String, dynamic>? configuracoes = (await _configuracaoService.configuracao);
+    if (configuracoes == null) return false;
+
+    final Map? configuracoesAutenticacao = configuracoes["autenticacao"] as Map?;
+    if (configuracoesAutenticacao == null) return false;
+
+    String? token = configuracoesAutenticacao["access_token"];
+    if (token == null) return false;
+
+    final response = await http.post(_http.parseUrl('/oauth/check_token', {'token': token}));
+    return response.statusCode == 200;
+  }
+
   Future<String> get accessToken async {
-    final Map<String, dynamic> configuracoes = (await _configuracaoService.configuracao)["autenticacao"];
+    final Map<String, dynamic> configuracoes = (await _configuracaoService.configuracao ?? {})["autenticacao"];
     return configuracoes["access_token"];
   }
 }

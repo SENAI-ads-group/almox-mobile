@@ -92,10 +92,8 @@ class _NovoAcessoState extends State<NovoAcesso> {
               ),
               TextFormField(
                 controller: _nameEC,
-                validator: Validatorless.multiple([
-                  Validatorless.required('Preencha o campo nome'),
-                  Validatorless.min(8, 'Preencha nome e sobrenome')
-                ]),
+                validator:
+                    Validatorless.multiple([Validatorless.required('Preencha o campo nome'), Validatorless.min(8, 'Preencha nome e sobrenome')]),
                 keyboardType: TextInputType.name,
                 decoration: InputDecoration(
                   labelText: "Nome Completo",
@@ -188,8 +186,7 @@ class _NovoAcessoState extends State<NovoAcesso> {
                 validator: Validatorless.multiple([
                   Validatorless.required('confirmar senha obrigatoria'),
                   Validatorless.min(6, 'pelo menos 6 caracteres'),
-                  Validators.compare(
-                      _passwordEC, 'Senha não confere')
+                  Validators.compare(_passwordEC, 'Senha não confere')
                 ]),
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
@@ -212,8 +209,7 @@ class _NovoAcessoState extends State<NovoAcesso> {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100),
-                  gradient: const LinearGradient(
-                      colors: [Colors.blue, Colors.blue]),
+                  gradient: const LinearGradient(colors: [Colors.blue, Colors.blue]),
                 ),
                 child: MaterialButton(
                   onPressed: () {

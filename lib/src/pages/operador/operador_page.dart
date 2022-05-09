@@ -1,4 +1,4 @@
-import 'package:almox_mobile/src/pages/home/home_bloc.dart';
+import 'package:almox_mobile/src/pages/home/home_controller.dart';
 import 'package:almox_mobile/src/pages/home/home_page.dart';
 import 'package:almox_mobile/src/widgets/botoes_navegacao/botao_navegacao_operador_widget.dart';
 import 'package:brasil_fields/brasil_fields.dart';
@@ -6,19 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class OperadorPage extends PaginaNavegacao {
-  OperadorPage()
-      : super(child: _OperadorPage(), botaoNavegacao: BotaoNavegacaoOperador());
+  OperadorPage() : super(child: _OperadorPage(), botaoNavegacao: BotaoNavegacaoOperador());
 }
 
 class _OperadorPage extends StatelessWidget {
-  final HomeBloc homeBloc = HomeBloc();
+  final HomeController homeController = HomeController();
   _OperadorPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    homeBloc.indexPaginaChangeNotifier.addListener(() {
-      if (homeBloc.indexPaginaAtual == 1) {
-        homeBloc.setBotaoAcao(floatingActionButton: null);
+    homeController.indexPaginaChangeNotifier.addListener(() {
+      if (homeController.indexPaginaAtual == 1) {
+        homeController.setBotaoAcao(floatingActionButton: null);
       }
     });
 

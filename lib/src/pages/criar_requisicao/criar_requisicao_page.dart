@@ -1,18 +1,17 @@
-import 'package:almox_mobile/src/model/grupo_model.dart';
 import 'package:almox_mobile/src/model/item_requisicao_model.dart';
 import 'package:almox_mobile/src/model/produto_model.dart';
-import 'package:almox_mobile/src/services/departamento_service.dart';
-import 'package:almox_mobile/src/services/operador_service.dart';
+import 'package:almox_mobile/src/model/requisicao_model.dart';
+import 'package:almox_mobile/src/services/requisicao_service.dart';
+import 'package:almox_mobile/src/widgets/campos/dropdown_almoxarife.dart';
+import 'package:almox_mobile/src/widgets/card_item_requisicao/card_item_requisicao_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:almox_mobile/src/widgets/card_produto/botoes_adicionar_remover.dart';
-import 'package:awesome_dialog/awesome_dialog.dart';
 
 import '../../almox_app_theme.dart';
-import '../../light_colors.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 
 import '../../model/departamento_model.dart';
 import '../../model/operador_model.dart';
+import '../../widgets/campos/dropdown_departamento.dart';
+import '../../widgets/container_carregando_widget.dart';
 
 class CriarRequisicaoPage extends StatefulWidget {
   CriarRequisicaoPage({Key? key}) : super(key: key);
@@ -22,47 +21,24 @@ class CriarRequisicaoPage extends StatefulWidget {
 }
 
 class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
-  final DepartamentoService _departamentoService = DepartamentoService();
-  final OperadorService _operadorService = OperadorService();
+  final _formKey = GlobalKey<FormState>();
+  final requisicaoService = RequisicaoService();
 
   List<ItemRequisicaoModel> itensSelecionados = [];
   DepartamentoModel? _departamentoSelecionado;
   OperadorModel? _almoxarifeSelecionado;
+  bool _carregando = false;
 
-  List<DepartamentoModel> _departamentosDisponiveis = [];
-  List<OperadorModel> _almoxarifesDisponiveis = [];
-  late Future<void> _dadosFormularioFuture;
-
-  Future<void> fetchDadosFormulario() async {
-    _departamentosDisponiveis = await _departamentoService.fetchDepartamentos();
-    _almoxarifesDisponiveis = await _operadorService.fetchOperadoresAlmoxarifes();
-  }
-
-  _avisoInformeQuantidades() => AwesomeDialog(
-        context: context,
-        dialogType: DialogType.WARNING,
-        buttonsBorderRadius: BorderRadius.all(Radius.circular(2)),
-        headerAnimationLoop: false,
-        animType: AnimType.SCALE,
-        desc: 'Informe a quantidade dos produtos!',
-        showCloseIcon: true,
-        btnOkColor: Colors.green,
-        btnOkOnPress: () {},
-      ).show();
+  bool _existeItemSemQuantidade() => itensSelecionados.isEmpty || itensSelecionados.any((item) => item.quantidade <= 0);
 
   Future<bool> _onWillPop(BuildContext context) {
     if (itensSelecionados.isNotEmpty) {
-      bool existeItemSemQuantidade = itensSelecionados.any((item) => item.quantidade <= 0);
-
-      if (existeItemSemQuantidade) {
-        _avisoInformeQuantidades();
-        return Future.value(false);
-      }
+      // lógica de salvar requisição localmente
     }
     return Future.value(true);
   }
 
-  _pesquisarProdutos(BuildContext context) async {
+  void _pesquisarProdutos(BuildContext context) async {
     List<ProdutoModel>? produtosSelecionadosNaPesquisa = await Navigator.pushNamed(context, '/selecionarProdutos') as List<ProdutoModel>?;
 
     setState(() {
@@ -72,321 +48,256 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
     });
   }
 
-  void _decrementarQuantidadeItemRequisicao(int indexItemASerDecrementado) {
-    setState(() {
-      itensSelecionados.asMap().keys.toList().forEach((index) {
-        if (index == indexItemASerDecrementado) {
-          ItemRequisicaoModel item = itensSelecionados.elementAt(index);
-          if (item.quantidade <= 0) {
-            AwesomeDialog(
-              context: context,
-              dialogType: DialogType.QUESTION,
-              buttonsBorderRadius: BorderRadius.all(Radius.circular(2)),
-              headerAnimationLoop: false,
-              animType: AnimType.SCALE,
-              desc: 'Remover Item!',
-              showCloseIcon: false,
-              dismissOnTouchOutside: false,
-              dismissOnBackKeyPress: false,
-              btnOkText: 'Sim',
-              btnOkColor: Colors.green,
-              btnOkOnPress: () {
-                setState(() {
-                  itensSelecionados.removeAt(index);
-                });
-              },
-              btnCancelText: 'Não',
-              btnCancelColor: Colors.red,
-              btnCancelOnPress: () {},
-            ).show();
-          } else {
-            item.quantidade = item.quantidade - 1;
-          }
-        }
-      });
-    });
-  }
-
-  void _incrementarQuantidadeItemRequisicao(int indexItemASerIncrementado) {
-    setState(() {
-      itensSelecionados.asMap().keys.toList().forEach((index) {
-        if (index == indexItemASerIncrementado) {
-          ItemRequisicaoModel item = itensSelecionados.elementAt(index);
-          item.quantidade = item.quantidade + 1;
-        }
-      });
-    });
-  }
-
-  Card _cardItemRequisicao(ItemRequisicaoModel item) {
+  CardItemRequisicao _cardItemRequisicao(ItemRequisicaoModel item) {
     int indexItem = itensSelecionados.indexOf(item);
     ItemRequisicaoModel itemRequisicao = itensSelecionados.elementAt(indexItem);
-    TextEditingController quantidadeTextFieldController = TextEditingController(text: "${itemRequisicao.quantidade}");
-    FocusNode focusNode = FocusNode();
-    focusNode.addListener((() {
-      if (focusNode.hasFocus) {
-        quantidadeTextFieldController.selection = TextSelection(baseOffset: 0, extentOffset: quantidadeTextFieldController.text.length);
-      }
-    }));
 
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)), side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
-      child: ListTile(
-        title: Text(item.produto.descricao),
-        subtitle: Text(item.produto.grupo.descricao),
-        trailing: BotoesAdicionarRemoverProduto(
-            quantidadeTextField: TextField(
-              focusNode: focusNode,
-              controller: quantidadeTextFieldController,
-              onSubmitted: (String valor) {
-                setState(() {
-                  itemRequisicao.quantidade = double.parse(valor);
-                });
-              },
-              textAlign: TextAlign.center,
-              keyboardType: TextInputType.number,
+    return CardItemRequisicao(
+      indexItem: indexItem,
+      itemRequisicao: itemRequisicao,
+      onQuantidadeChanged: (double valor) => setState(() => itemRequisicao.quantidade = valor),
+      onAdicionarPressed: () => setState(() => itemRequisicao.quantidade += 1),
+      onRemoverPressed: () async {
+        if (itemRequisicao.quantidade <= 0) {
+          final resposta = await showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('Itens'),
+              content: Text('Tem certeza que deseja remover este item da lista?'),
+              actions: <Widget>[
+                ElevatedButton(
+                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red)),
+                  onPressed: () => Navigator.pop(context, 'Não'),
+                  child: const Text('Não'),
+                ),
+                ElevatedButton(
+                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.green)),
+                  onPressed: () => Navigator.pop(context, 'Sim'),
+                  child: const Text('Sim'),
+                ),
+              ],
             ),
-            onRemoverPressed: () => _decrementarQuantidadeItemRequisicao(indexItem),
-            onAdicionarPressed: () => _incrementarQuantidadeItemRequisicao(indexItem)),
-      ),
+          );
+          if (resposta == 'Sim') setState(() => itensSelecionados.removeAt(indexItem));
+        } else {
+          setState(() => itemRequisicao.quantidade -= 1);
+        }
+      },
     );
   }
 
-  Widget _botoesInclusaoItem() => Row(
-        children: [
-          Expanded(
-            child: ElevatedButton.icon(
-              icon: Icon(Icons.add),
-              label: Text('Incluir', style: TextStyle(fontSize: 18)),
-              style: ButtonStyle(shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)))),
-              onPressed: () async => await _pesquisarProdutos(context),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-            child: ElevatedButton(
-              style: ButtonStyle(
-                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0),
-              ))),
-              child: Icon(Icons.camera_alt),
-              onPressed: () {},
+  void _onSalvar() async {
+    final formularioValido = _formKey.currentState?.validate() ?? false;
+    if (!formularioValido) return;
+
+    final requestCriarRequisicao = CriarRequisicao(
+      idOperadorAlmoxarife: _almoxarifeSelecionado!.id,
+      idDepartamento: _departamentoSelecionado!.id,
+      itens: itensSelecionados
+          .map(
+            (ItemRequisicaoModel item) => CriarRequisicaoItem(
+              idProduto: item.produto.id,
+              quantidade: item.quantidade,
             ),
           )
-        ],
-      );
+          .toList(),
+    );
 
-  @override
-  void initState() {
-    super.initState();
-    _departamentoService.fetchDepartamentos().then((value) => setState(() => _departamentosDisponiveis = value));
-    _operadorService.fetchOperadoresAlmoxarifes().then((value) => setState(() => _almoxarifesDisponiveis = value));
+    final _snackbarSucesso = SnackBar(
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: const [
+          Text('Requisição criada com sucesso'),
+          Icon(Icons.check, color: Colors.white),
+        ],
+      ),
+      duration: Duration(milliseconds: 350),
+      backgroundColor: Colors.green,
+    );
+
+    final _snackbarErro = SnackBar(
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: const [Text('Não foi possível criar a requisição'), Icon(Icons.error)],
+      ),
+      backgroundColor: Colors.red,
+    );
+
+    if (!_carregando) {
+      setState(() => _carregando = true);
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      try {
+        FocusManager.instance.primaryFocus?.unfocus();
+        await requisicaoService.criarRequisicao(requestCriarRequisicao);
+
+        ScaffoldMessenger.of(context).showSnackBar(_snackbarSucesso);
+        Navigator.pop(context);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(_snackbarErro);
+      } finally {
+        setState(() => _carregando = false);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final Map<String, Widget> _campos = {
-      "almoxarife": DropdownSearch<OperadorModel>(
-        mode: Mode.BOTTOM_SHEET,
-        items: _almoxarifesDisponiveis,
-        dropdownSearchDecoration: InputDecoration(
-          labelText: "Almoxarife",
-          border: OutlineInputBorder(),
-        ),
-        popupShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-        itemAsString: (OperadorModel? ope) => ope?.pessoa.nome ?? "",
-        onFind: (String? filter) async {
-          var almoxarifesEncontrados = await _operadorService.fetchOperadoresAlmoxarifes(nome: filter);
-          setState(() => _almoxarifesDisponiveis = almoxarifesEncontrados);
-          return almoxarifesEncontrados;
-        },
-        showSearchBox: true,
-        searchDelay: const Duration(seconds: 1),
-        searchFieldProps: TextFieldProps(
-          decoration: InputDecoration(
-            labelText: "Pesquisar",
-            border: OutlineInputBorder(),
-            suffixIcon: Icon(Icons.search),
-          ),
-        ),
-        showClearButton: true,
+      "almoxarife": DropdownSearchAlmoxarife(
         onChanged: (OperadorModel? value) => setState(() => _almoxarifeSelecionado = value),
-        loadingBuilder: (BuildContext context, String? v) => Center(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [CircularProgressIndicator(), Text("carregando almoxarifes... aguarde...")]),
-        ),
-        errorBuilder: (BuildContext context, String? v, dynamic d) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Center(
-                  child: Icon(
-                Icons.clear_rounded,
-                color: Colors.red,
-                size: 50,
-              )),
-              Center(
-                child: Text("erro ao carregar almoxarifes"),
-              )
-            ],
-          ),
-        ),
-      ),
-      "departamento": DropdownSearch<DepartamentoModel>(
-        mode: Mode.BOTTOM_SHEET,
-        items: _departamentosDisponiveis,
-        dropdownSearchDecoration: InputDecoration(
-          labelText: "Departamento",
-          border: OutlineInputBorder(),
-        ),
-        popupShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-        itemAsString: (DepartamentoModel? dpto) => dpto?.descricao ?? "",
-        onFind: (String? filter) async {
-          var departamentosEncontrados = await _departamentoService.fetchDepartamentos(descricao: filter);
-          setState(() => _departamentosDisponiveis = departamentosEncontrados);
-          return departamentosEncontrados;
+        validator: (OperadorModel? value) {
+          if (value == null) return "Campo obrigatório";
+          return null;
         },
-        showSearchBox: true,
-        searchDelay: const Duration(seconds: 1),
-        searchFieldProps: TextFieldProps(
-          decoration: InputDecoration(
-            labelText: "Pesquisar",
-            border: OutlineInputBorder(),
-            suffixIcon: Icon(Icons.search),
-          ),
-        ),
-        showClearButton: true,
-        onChanged: (DepartamentoModel? value) => setState(() => _departamentoSelecionado = value),
-        loadingBuilder: (BuildContext context, String? v) => Center(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [CircularProgressIndicator(), Text("carregando departamentos... aguarde...")]),
-        ),
-        errorBuilder: (BuildContext context, String? v, dynamic d) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Center(
-                  child: Icon(
-                Icons.clear_rounded,
-                color: Colors.red,
-                size: 50,
-              )),
-              Center(
-                child: Text("erro ao carregar departamentos"),
-              )
-            ],
-          ),
-        ),
       ),
+      "departamento": DropdownSearchDepartamento(
+        onChanged: (DepartamentoModel? value) => setState(() => _departamentoSelecionado = value),
+        validator: (DepartamentoModel? value) {
+          if (value == null) return "Campo obrigatório";
+          return null;
+        },
+      )
     };
 
-    final _formulario = Form(
-        child: SingleChildScrollView(
-      child: Column(
-        children: _campos.values
-            .map(
-              (Widget campo) => Column(children: [
-                campo,
-                SizedBox(height: 25.0),
-              ]),
-            )
-            .toList(),
+    final _cardFormulario = Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: const [
+              Text('Cabeçalho', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            ]),
+            Row(mainAxisAlignment: MainAxisAlignment.start, children: const [
+              Text('Informações da Requisição', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w400)),
+            ]),
+            SizedBox(height: 20),
+            Form(
+              key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: _campos.values
+                      .toList()
+                      .asMap()
+                      .map(
+                        (index, campo) => MapEntry(
+                          index,
+                          index == _campos.values.length - 1
+                              ? Column(
+                                  children: [campo], // campo sem margem inferior
+                                )
+                              : Column(
+                                  children: [campo, SizedBox(height: 25)], // campo com margem inferior
+                                ),
+                        ),
+                      )
+                      .values
+                      .toList(),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-    ));
+    );
+
+    final _botaoAdicionarProduto = Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        ElevatedButton(
+          style: ButtonStyle(
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+            ),
+          ),
+          onPressed: () => _pesquisarProdutos(context),
+          child: Center(
+            child: Text(
+              'Adicionar Produtos',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 18),
+            ),
+          ),
+        ),
+      ],
+    );
+
+    final _cardInformativoSemProdutosAdicionados = Card(
+      elevation: 2,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Center(
+            child: Icon(
+              Icons.info,
+              color: Colors.blue,
+              size: 50,
+            ),
+          ),
+          Center(
+            child: Text(
+              'Você não Possui Produtos Adicionados',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+            ),
+          ),
+          Center(
+            child: Text("Adicione produtos para continuar", style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w400)),
+          )
+        ],
+      ),
+    );
+
+    final _botaoSalvar = ElevatedButton(
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(_existeItemSemQuantidade() ? Colors.grey : Colors.green),
+        shape: MaterialStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+        ),
+      ),
+      onPressed: _existeItemSemQuantidade() ? null : _onSalvar,
+      child: Center(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(Icons.save),
+            SizedBox(width: 5),
+            Text(
+              'Salvar',
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+            )
+          ],
+        ),
+      ),
+    );
+
+    final _body = ListView(
+      children: [
+        _cardFormulario,
+        SizedBox(height: 10),
+        _botaoAdicionarProduto,
+        SizedBox(
+          height: 175,
+          child: itensSelecionados.isEmpty
+              ? _cardInformativoSemProdutosAdicionados
+              : ListView(
+                  children: itensSelecionados.map(_cardItemRequisicao).toList(),
+                ),
+        ),
+        SizedBox(height: 10),
+        Align(alignment: Alignment.bottomCenter, child: SizedBox(height: 45, child: _botaoSalvar))
+      ],
+    );
 
     return WillPopScope(
       onWillPop: () => _onWillPop(context),
       child: Scaffold(
         backgroundColor: AlmoxAppTheme.background,
-        appBar: AppBar(
-          title: Text("Criar Requisição"),
-        ),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-            child: Column(
-              children: [
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(children: [
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: const <Widget>[
-                        Text(
-                          'Cabeçalho',
-                          style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),
-                        ),
-                      ]),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Informações da Requisição',
-                            style: TextStyle(fontSize: 18.0, color: Colors.grey, fontWeight: FontWeight.w400),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                      _formulario,
-                    ]),
-                  ),
-                ),
-                SizedBox(height: 15),
-                Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                      ),
-                    ),
-                    onPressed: () async => await _pesquisarProdutos(context),
-                    child: Center(
-                      child: Text(
-                        'Adicionar Produtos',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 18),
-                      ),
-                    ),
-                  ),
-                ]),
-                SizedBox(height: 5),
-                Flexible(
-                  child: ListView(
-                    children: itensSelecionados.map((ItemRequisicaoModel item) => _cardItemRequisicao(item)).toList(),
-                  ),
-                ),
-                Center(
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(itensSelecionados.isEmpty ? Colors.grey : Colors.green),
-                      shape: MaterialStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                      ),
-                    ),
-                    onPressed: itensSelecionados.isEmpty ? null : () {},
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(Icons.save),
-                          SizedBox(width: 5),
-                          Text(
-                            'Salvar',
-                            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10)
-              ],
-            ),
-          ),
+        appBar: AppBar(title: Text("Criar Requisição")),
+        body: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+          child: _carregando ? ContainerCarregando(child: _body) : _body,
         ),
       ),
     );

@@ -1,6 +1,6 @@
 enum StatusRequisicao { aguardandoAtendimento, emAtendimento, entregue, cancelada }
 
-extension CatExtension on StatusRequisicao {
+extension StatusRequisicaoExtension on StatusRequisicao {
   String get descricao {
     switch (this) {
       case StatusRequisicao.aguardandoAtendimento:

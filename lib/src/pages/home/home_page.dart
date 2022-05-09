@@ -1,4 +1,4 @@
-import 'package:almox_mobile/src/pages/home/home_bloc.dart';
+import 'package:almox_mobile/src/pages/home/home_controller.dart';
 import 'package:almox_mobile/src/pages/operador/operador_page.dart';
 import 'package:almox_mobile/src/pages/listagem_requisicoes/listagem_requisicoes.dart';
 import 'package:flutter/material.dart';
@@ -13,25 +13,26 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  HomeBloc homeBloc = HomeBloc();
+  HomeController homeController = HomeController();
 
   _onIndexPaginaChange(int index) {
-    setState(() => homeBloc.indexPaginaAtual = index);
+    setState(() => homeController.indexPaginaAtual = index);
   }
 
   @override
   void initState() {
     super.initState();
-    homeBloc.indexPaginaAtual = 0;
-    homeBloc.setBotaoAcao(
-        floatingActionButton: FloatingActionButton(
-      backgroundColor: Color.fromRGBO(200, 230, 201, 1),
-      onPressed: () => Navigator.pushNamed(context, '/criarRequisicao'),
-      child: Icon(
-        Icons.add_outlined,
-        color: Color.fromRGBO(37, 96, 41, 1),
+    homeController.indexPaginaAtual = 0;
+    homeController.setBotaoAcao(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Color.fromRGBO(200, 230, 201, 1),
+        onPressed: () => Navigator.pushNamed(context, '/criarRequisicao'),
+        child: Icon(
+          Icons.add_outlined,
+          color: Color.fromRGBO(37, 96, 41, 1),
+        ),
       ),
-    ));
+    );
   }
 
   @override
@@ -41,12 +42,12 @@ class _HomePageState extends State<HomePage> {
         title: Text('Almox'),
       ),
       body: IndexedStack(
-        index: homeBloc.indexPaginaAtual,
+        index: homeController.indexPaginaAtual,
         children: widget.paginas.map((e) => e.child).toList(),
       ),
-      floatingActionButton: homeBloc.floatingActionButton,
+      floatingActionButton: homeController.floatingActionButton,
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: homeBloc.indexPaginaAtual,
+        currentIndex: homeController.indexPaginaAtual,
         onTap: _onIndexPaginaChange,
         items: widget.paginas.map((pagina) => pagina.botaoNavegacao).toList(),
       ),

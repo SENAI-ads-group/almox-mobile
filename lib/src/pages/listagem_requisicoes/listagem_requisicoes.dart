@@ -1,5 +1,5 @@
 import 'package:almox_mobile/src/model/status_requisicao.dart';
-import 'package:almox_mobile/src/pages/home/home_bloc.dart';
+import 'package:almox_mobile/src/pages/home/home_controller.dart';
 import 'package:almox_mobile/src/widgets/botoes_navegacao/botao_navegacao_requisicoes.widget.dart';
 import 'package:flutter/material.dart';
 
@@ -8,21 +8,21 @@ import 'package:almox_mobile/src/pages/home/home_page.dart';
 import '../../model/requisicao_model.dart';
 
 class ListagemRequisicoesPage extends PaginaNavegacao {
-  final HomeBloc homeBloc = HomeBloc();
+  final HomeController homeController = HomeController();
 
   ListagemRequisicoesPage() : super(child: _ListagemRequisicoesPage(), botaoNavegacao: BotaoNavegacaoRequisicoes());
 }
 
 class _ListagemRequisicoesPage extends StatelessWidget {
-  final HomeBloc homeBloc = HomeBloc();
+  final HomeController homeController = HomeController();
 
   _ListagemRequisicoesPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    homeBloc.indexPaginaChangeNotifier.addListener(() {
-      if (homeBloc.indexPaginaAtual == 0) {
-        homeBloc.setBotaoAcao(
+    homeController.indexPaginaChangeNotifier.addListener(() {
+      if (homeController.indexPaginaAtual == 0) {
+        homeController.setBotaoAcao(
             floatingActionButton: FloatingActionButton(
           backgroundColor: Color.fromRGBO(200, 230, 201, 1),
           onPressed: () => Navigator.pushNamed(context, '/criarRequisicao'),

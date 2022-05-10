@@ -44,7 +44,14 @@ class AutenticacaoService {
     String? token = configuracoesAutenticacao["access_token"];
     if (token == null) return false;
 
-    final response = await http.post(_http.parseUrl('/oauth/check_token', {'token': token}));
+    final response = await http
+        .post(
+          _http.parseUrl('/oauth/check_token', {'token': token}),
+        )
+        .timeout(
+          const Duration(seconds: 5),
+          onTimeout: () => http.Response('Error', 408),
+        );
     return response.statusCode == 200;
   }
 

@@ -58,7 +58,10 @@ class _LoginScreenState extends State<LoginScreen> {
     final _snackbarErro = SnackBar(
       content: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: const [Text('Não foi possível realizar o login'), Icon(Icons.error)],
+        children: const [
+          Text('Não foi possível realizar o login'),
+          Icon(Icons.error)
+        ],
       ),
       backgroundColor: Colors.red,
     );
@@ -68,7 +71,8 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       try {
         FocusManager.instance.primaryFocus?.unfocus();
-        final loginRealizadoComSucesso = await _autenticacaoService.login(usuario: _cpfEC.text, senha: _passwordEC.text);
+        final loginRealizadoComSucesso = await _autenticacaoService.login(
+            usuario: _cpfEC.text, senha: _passwordEC.text);
 
         setState(() => _carregando = false);
         if (loginRealizadoComSucesso) {
@@ -134,7 +138,8 @@ class _LoginScreenState extends State<LoginScreen> {
     final _campoSenha = TextFormField(
       controller: _passwordEC,
       keyboardType: TextInputType.text,
-      validator: Validatorless.multiple([Validatorless.required('Preecha o campo senha')]),
+      validator: Validatorless.multiple(
+          [Validatorless.required('Preecha o campo senha')]),
       autofocus: true,
       obscureText: true,
       decoration: const InputDecoration(
@@ -198,7 +203,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(100),
-                    gradient: LinearGradient(colors: [Theme.of(context).primaryColor, Colors.blue]),
+                    gradient: LinearGradient(
+                        colors: [Theme.of(context).primaryColor, Colors.blue]),
                   ),
                   child: MaterialButton(
                       onPressed: _onRealizarLogin,
@@ -249,6 +255,10 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
 
-    return Padding(padding: const EdgeInsets.all(30), child: _carregando ? ContainerCarregando(child: _formulario) : _formulario);
+    return Padding(
+        padding: const EdgeInsets.all(30),
+        child: _carregando
+            ? ContainerCarregando(child: _formulario)
+            : _formulario);
   }
 }

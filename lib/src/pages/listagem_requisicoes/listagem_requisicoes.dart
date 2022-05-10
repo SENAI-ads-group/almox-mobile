@@ -1,5 +1,6 @@
 import 'package:almox_mobile/src/model/status_requisicao.dart';
 import 'package:almox_mobile/src/pages/home/home_controller.dart';
+import 'package:almox_mobile/src/services/requisicao_service.dart';
 import 'package:almox_mobile/src/widgets/botoes_navegacao/botao_navegacao_requisicoes.widget.dart';
 import 'package:flutter/material.dart';
 
@@ -8,15 +9,61 @@ import 'package:almox_mobile/src/pages/home/home_page.dart';
 import '../../model/requisicao_model.dart';
 
 class ListagemRequisicoesPage extends PaginaNavegacao {
-  final HomeController homeController = HomeController();
-
-  ListagemRequisicoesPage() : super(child: _ListagemRequisicoesPage(), botaoNavegacao: BotaoNavegacaoRequisicoes());
+  ListagemRequisicoesPage()
+      : super(
+            child: _ListagemRequisicoesPage(),
+            botaoNavegacao: BotaoNavegacaoRequisicoes());
 }
 
-class _ListagemRequisicoesPage extends StatelessWidget {
-  final HomeController homeController = HomeController();
+class _ListagemRequisicoesPage extends StatefulWidget {
+  const _ListagemRequisicoesPage({Key? key}) : super(key: key);
 
-  _ListagemRequisicoesPage({Key? key}) : super(key: key);
+  @override
+  State<_ListagemRequisicoesPage> createState() =>
+      _ListagemRequisicoesPageState();
+}
+
+class _ListagemRequisicoesPageState extends State<_ListagemRequisicoesPage> {
+  final HomeController homeController = HomeController();
+  final RequisicaoService requisicaoService = RequisicaoService();
+
+  List<RequisicaoModel> requisicoes = [];
+
+  @override
+  void initState() async {
+    super.initState();
+    setState(() async {
+      requisicoes = await requisicaoService.fetchRequisicao();
+    });
+  }
+
+  Card _cardRequisicao(RequisicaoModel requisicao) {
+    return Card(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(15)),
+          side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
+      child: Padding(
+        padding: EdgeInsets.all(5),
+        child: ListTile(
+          title: Text(
+            requisicao.departamento.descricao,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(requisicao.dataRequisicao.toString()),
+              Text(requisicao.almoxarife.pessoa.nome),
+            ],
+          ),
+          trailing: Text(requisicao.status.descricao,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              )),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +81,7 @@ class _ListagemRequisicoesPage extends StatelessWidget {
       }
     });
 
-    return Container(
+    return Card(
       color: Color.fromRGBO(245, 245, 245, 1),
       child: Padding(
           padding: EdgeInsets.all(16),
@@ -42,69 +89,14 @@ class _ListagemRequisicoesPage extends StatelessWidget {
             children: [
               Expanded(
                 child: ListView(
-                  children: requisicoes.map((RequisicaoModel requisicao) => _cardRequisicao(requisicao)).toList(),
+                  children: requisicoes
+                      .map((RequisicaoModel requisicao) =>
+                          _cardRequisicao(requisicao))
+                      .toList(),
                 ),
               ),
             ],
           )),
-    );
-  }
-
-  List<RequisicaoModel> requisicoes = [
-    RequisicaoModel(
-        dataRequisicao: "20/12/2021",
-        departamento: "Financeiro",
-        nomeAlmoxarife: "Marcos Aurélio",
-        nomeRequisitante: "Mathias Conceição",
-        statusRequisicao: StatusRequisicao.emAtendimento),
-    RequisicaoModel(
-        dataRequisicao: "12/03/2022",
-        departamento: "Diretoria",
-        nomeAlmoxarife: "Alexandre Nogueira",
-        nomeRequisitante: "Eduardo Mansur",
-        statusRequisicao: StatusRequisicao.entregue)
-  ];
-
-  ListView _filtroStatus() => ListView(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-        children: requisicoes
-            .map(
-              (g) => TextButton(
-                onPressed: () {},
-                child: Text(g.statusRequisicao.descricao,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    )),
-              ),
-            )
-            .toList(),
-      );
-
-  Card _cardRequisicao(RequisicaoModel requisicao) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15)), side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
-      child: Padding(
-        padding: EdgeInsets.all(5),
-        child: ListTile(
-          title: Text(
-            requisicao.departamento,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(requisicao.dataRequisicao),
-              Text(requisicao.nomeAlmoxarife),
-            ],
-          ),
-          trailing: Text(requisicao.statusRequisicao.descricao,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              )),
-        ),
-      ),
     );
   }
 }

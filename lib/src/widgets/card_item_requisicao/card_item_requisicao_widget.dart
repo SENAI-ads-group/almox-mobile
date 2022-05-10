@@ -1,4 +1,3 @@
-import 'package:almox_mobile/src/model/item_requisicao_model.dart';
 import 'package:almox_mobile/src/model/requisicao_model.dart';
 import 'package:flutter/material.dart';
 
@@ -23,16 +22,21 @@ class CardItemRequisicao extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController quantidadeTextFieldController = TextEditingController(text: "${itemRequisicao.quantidade}");
+    TextEditingController quantidadeTextFieldController =
+        TextEditingController(text: "${itemRequisicao.quantidade}");
     FocusNode focusNode = FocusNode();
     focusNode.addListener((() {
       if (focusNode.hasFocus) {
-        quantidadeTextFieldController.selection = TextSelection(baseOffset: 0, extentOffset: quantidadeTextFieldController.text.length);
+        quantidadeTextFieldController.selection = TextSelection(
+            baseOffset: 0,
+            extentOffset: quantidadeTextFieldController.text.length);
       }
     }));
 
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)), side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
       child: ListTile(
         title: Text(itemRequisicao.produto.descricao),
         subtitle: Text(itemRequisicao.produto.grupo.descricao),

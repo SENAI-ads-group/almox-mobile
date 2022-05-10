@@ -9,18 +9,14 @@ import 'package:almox_mobile/src/pages/home/home_page.dart';
 import '../../model/requisicao_model.dart';
 
 class ListagemRequisicoesPage extends PaginaNavegacao {
-  ListagemRequisicoesPage()
-      : super(
-            child: _ListagemRequisicoesPage(),
-            botaoNavegacao: BotaoNavegacaoRequisicoes());
+  ListagemRequisicoesPage() : super(child: _ListagemRequisicoesPage(), botaoNavegacao: BotaoNavegacaoRequisicoes());
 }
 
 class _ListagemRequisicoesPage extends StatefulWidget {
   const _ListagemRequisicoesPage({Key? key}) : super(key: key);
 
   @override
-  State<_ListagemRequisicoesPage> createState() =>
-      _ListagemRequisicoesPageState();
+  State<_ListagemRequisicoesPage> createState() => _ListagemRequisicoesPageState();
 }
 
 class _ListagemRequisicoesPageState extends State<_ListagemRequisicoesPage> {
@@ -30,18 +26,30 @@ class _ListagemRequisicoesPageState extends State<_ListagemRequisicoesPage> {
   List<RequisicaoModel> requisicoes = [];
 
   @override
-  void initState() async {
+  void initState() {
     super.initState();
-    setState(() async {
-      requisicoes = await requisicaoService.fetchRequisicao();
+    requisicaoService.fetchRequisicao().then(
+          (value) => setState(() => requisicoes = value),
+        );
+
+    homeController.indexPaginaChangeNotifier.addListener(() {
+      if (homeController.indexPaginaAtual == 0) {
+        homeController.setBotaoAcao(
+            floatingActionButton: FloatingActionButton(
+          backgroundColor: Color.fromRGBO(200, 230, 201, 1),
+          onPressed: () => Navigator.pushNamed(context, '/criarRequisicao'),
+          child: Icon(
+            Icons.add_outlined,
+            color: Color.fromRGBO(37, 96, 41, 1),
+          ),
+        ));
+      }
     });
   }
 
   Card _cardRequisicao(RequisicaoModel requisicao) {
     return Card(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(15)),
-          side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15)), side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
       child: Padding(
         padding: EdgeInsets.all(5),
         child: ListTile(
@@ -67,36 +75,20 @@ class _ListagemRequisicoesPageState extends State<_ListagemRequisicoesPage> {
 
   @override
   Widget build(BuildContext context) {
-    homeController.indexPaginaChangeNotifier.addListener(() {
-      if (homeController.indexPaginaAtual == 0) {
-        homeController.setBotaoAcao(
-            floatingActionButton: FloatingActionButton(
-          backgroundColor: Color.fromRGBO(200, 230, 201, 1),
-          onPressed: () => Navigator.pushNamed(context, '/criarRequisicao'),
-          child: Icon(
-            Icons.add_outlined,
-            color: Color.fromRGBO(37, 96, 41, 1),
-          ),
-        ));
-      }
-    });
-
     return Card(
       color: Color.fromRGBO(245, 245, 245, 1),
       child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  children: requisicoes
-                      .map((RequisicaoModel requisicao) =>
-                          _cardRequisicao(requisicao))
-                      .toList(),
-                ),
+        padding: EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                children: requisicoes.map(_cardRequisicao).toList(),
               ),
-            ],
-          )),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

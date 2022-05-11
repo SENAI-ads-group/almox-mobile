@@ -19,8 +19,7 @@ class DropdownSearchAlmoxarife extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<DropdownSearchAlmoxarife> createState() =>
-      _DropdownSearchAlmoxarifeState();
+  State<DropdownSearchAlmoxarife> createState() => _DropdownSearchAlmoxarifeState();
 }
 
 class _DropdownSearchAlmoxarifeState extends State<DropdownSearchAlmoxarife> {
@@ -65,10 +64,8 @@ class _DropdownSearchAlmoxarifeState extends State<DropdownSearchAlmoxarife> {
   );
 
   final _mensagemCarregando = Center(
-    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
-      CircularProgressIndicator(),
-      Text("carregando almoxarifes... aguarde...")
-    ]),
+    child: Column(
+        mainAxisAlignment: MainAxisAlignment.center, children: const [CircularProgressIndicator(), Text("carregando almoxarifes... aguarde...")]),
   );
 
   final _mensagemNenhumItemEncontrado = Center(
@@ -108,22 +105,18 @@ class _DropdownSearchAlmoxarifeState extends State<DropdownSearchAlmoxarife> {
       showClearButton: true,
       showSearchBox: true,
       searchFieldProps: _textFieldPesquisa,
-      popupShape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+      popupShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       itemAsString: (OperadorModel? ope) => ope?.pessoa.nome ?? "",
       onFind: (String? filter) async {
-        final _operadoresFiltrados =
-            await operadorService.fetchOperadoresAlmoxarifes(nome: filter);
+        final _operadoresFiltrados = await operadorService.fetchOperadoresAlmoxarifes(nome: filter);
         _mudarOperadorSelecionado(_operadoresFiltrados);
 
         return _operadoresFiltrados;
       },
       searchDelay: const Duration(seconds: 1),
-      emptyBuilder: (BuildContext context, String? v) =>
-          _mensagemNenhumItemEncontrado,
+      emptyBuilder: (BuildContext context, String? v) => _mensagemNenhumItemEncontrado,
       loadingBuilder: (BuildContext context, String? v) => _mensagemCarregando,
-      errorBuilder: (BuildContext context, String? v, dynamic d) =>
-          _mensagemErro,
+      errorBuilder: (BuildContext context, String? v, dynamic d) => _mensagemErro,
       dropdownSearchDecoration: InputDecoration(
         labelText: "Almoxarife",
         labelStyle: TextStyle(fontSize: 16),

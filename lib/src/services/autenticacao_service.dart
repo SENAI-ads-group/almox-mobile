@@ -49,7 +49,7 @@ class AutenticacaoService {
           _http.parseUrl('/oauth/check_token', {'token': token}),
         )
         .timeout(
-          const Duration(seconds: 5),
+          const Duration(seconds: 2),
           onTimeout: () => http.Response('Error', 408),
         );
     return response.statusCode == 200;

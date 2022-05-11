@@ -1,6 +1,6 @@
 import 'package:almox_mobile/src/pages/home/home_controller.dart';
-import 'package:almox_mobile/src/pages/operador/operador_page.dart';
 import 'package:almox_mobile/src/pages/listagem_requisicoes/listagem_requisicoes.dart';
+import 'package:almox_mobile/src/pages/operador/operador_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {

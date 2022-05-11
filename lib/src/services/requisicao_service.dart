@@ -19,4 +19,17 @@ class RequisicaoService {
       throw Exception('Não foi possível criar a requisição');
     }
   }
+
+  Future<List<RequisicaoModel>> fetchRequisicao() async {
+    final response = await _http.get('/requisicoes');
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> json = jsonDecode(utf8.decode(response.bodyBytes));
+      return (json['data'] as List<dynamic>)
+          .map((jsonData) => RequisicaoModel.fromJson(jsonData))
+          .toList();
+    } else {
+      throw Exception('Não foi possível carregar as Requisições');
+    }
+  }
 }

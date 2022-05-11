@@ -1,3 +1,4 @@
+import 'package:almox_mobile/src/pages/atender_requisicao/atender_requisicao_page.dart';
 import 'package:almox_mobile/src/pages/criar_requisicao/criar_requisicao_page.dart';
 import 'package:almox_mobile/src/pages/selecionar_produtos/selecionar_produtos_page.dart';
 import 'package:flutter/material.dart';
@@ -9,4 +10,5 @@ Map<String, WidgetBuilder> routes = {
   '/criarRequisicao': (context) => CriarRequisicaoPage(),
   '/login': (context) => LoginPage(),
   '/selecionarProdutos': (context) => SelecionarProdutosPage(),
+  '/atenderRequisicao': (context) => AtenderRequisicaoPage(),
 };

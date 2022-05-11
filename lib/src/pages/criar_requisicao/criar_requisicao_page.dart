@@ -1,4 +1,3 @@
-import 'package:almox_mobile/src/model/item_requisicao_model.dart';
 import 'package:almox_mobile/src/model/produto_model.dart';
 import 'package:almox_mobile/src/model/requisicao_model.dart';
 import 'package:almox_mobile/src/services/requisicao_service.dart';
@@ -29,7 +28,9 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
   OperadorModel? _almoxarifeSelecionado;
   bool _carregando = false;
 
-  bool _existeItemSemQuantidade() => itensSelecionados.isEmpty || itensSelecionados.any((item) => item.quantidade <= 0);
+  bool _existeItemSemQuantidade() =>
+      itensSelecionados.isEmpty ||
+      itensSelecionados.any((item) => item.quantidade <= 0);
 
   Future<bool> _onWillPop(BuildContext context) {
     if (itensSelecionados.isNotEmpty) {
@@ -39,12 +40,16 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
   }
 
   void _pesquisarProdutos(BuildContext context) async {
-    List<ProdutoModel>? produtosSelecionadosNaPesquisa = await Navigator.pushNamed(context, '/selecionarProdutos') as List<ProdutoModel>?;
+    List<ProdutoModel>? produtosSelecionadosNaPesquisa =
+        await Navigator.pushNamed(context, '/selecionarProdutos')
+            as List<ProdutoModel>?;
 
     setState(() {
       itensSelecionados.addAll((produtosSelecionadosNaPesquisa ?? [])
-          .where((ProdutoModel produto) => !itensSelecionados.any((i) => i.produto.id == produto.id))
-          .map((ProdutoModel produto) => ItemRequisicaoModel(produto: produto, quantidade: 0)));
+          .where((ProdutoModel produto) =>
+              !itensSelecionados.any((i) => i.produto.id == produto.id))
+          .map((ProdutoModel produto) =>
+              ItemRequisicaoModel.fromProdutoModel(produto, 0)));
     });
   }
 
@@ -55,7 +60,8 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
     return CardItemRequisicao(
       indexItem: indexItem,
       itemRequisicao: itemRequisicao,
-      onQuantidadeChanged: (double valor) => setState(() => itemRequisicao.quantidade = valor),
+      onQuantidadeChanged: (double valor) =>
+          setState(() => itemRequisicao.quantidade = valor),
       onAdicionarPressed: () => setState(() => itemRequisicao.quantidade += 1),
       onRemoverPressed: () async {
         if (itemRequisicao.quantidade <= 0) {
@@ -63,22 +69,26 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
             context: context,
             builder: (BuildContext context) => AlertDialog(
               title: const Text('Itens'),
-              content: Text('Tem certeza que deseja remover este item da lista?'),
+              content:
+                  Text('Tem certeza que deseja remover este item da lista?'),
               actions: <Widget>[
                 ElevatedButton(
-                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red)),
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.red)),
                   onPressed: () => Navigator.pop(context, 'Não'),
                   child: const Text('Não'),
                 ),
                 ElevatedButton(
-                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.green)),
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.green)),
                   onPressed: () => Navigator.pop(context, 'Sim'),
                   child: const Text('Sim'),
                 ),
               ],
             ),
           );
-          if (resposta == 'Sim') setState(() => itensSelecionados.removeAt(indexItem));
+          if (resposta == 'Sim')
+            setState(() => itensSelecionados.removeAt(indexItem));
         } else {
           setState(() => itemRequisicao.quantidade -= 1);
         }
@@ -118,7 +128,10 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
     final _snackbarErro = SnackBar(
       content: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: const [Text('Não foi possível criar a requisição'), Icon(Icons.error)],
+        children: const [
+          Text('Não foi possível criar a requisição'),
+          Icon(Icons.error)
+        ],
       ),
       backgroundColor: Colors.red,
     );
@@ -144,14 +157,16 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
   Widget build(BuildContext context) {
     final Map<String, Widget> _campos = {
       "almoxarife": DropdownSearchAlmoxarife(
-        onChanged: (OperadorModel? value) => setState(() => _almoxarifeSelecionado = value),
+        onChanged: (OperadorModel? value) =>
+            setState(() => _almoxarifeSelecionado = value),
         validator: (OperadorModel? value) {
           if (value == null) return "Campo obrigatório";
           return null;
         },
       ),
       "departamento": DropdownSearchDepartamento(
-        onChanged: (DepartamentoModel? value) => setState(() => _departamentoSelecionado = value),
+        onChanged: (DepartamentoModel? value) =>
+            setState(() => _departamentoSelecionado = value),
         validator: (DepartamentoModel? value) {
           if (value == null) return "Campo obrigatório";
           return null;
@@ -165,11 +180,19 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: const [
-              Text('Cabeçalho', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-            ]),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Text('Cabeçalho',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                ]),
             Row(mainAxisAlignment: MainAxisAlignment.start, children: const [
-              Text('Informações da Requisição', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w400)),
+              Text('Informações da Requisição',
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w400)),
             ]),
             SizedBox(height: 20),
             Form(
@@ -185,10 +208,15 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
                           index,
                           index == _campos.values.length - 1
                               ? Column(
-                                  children: [campo], // campo sem margem inferior
+                                  children: [
+                                    campo
+                                  ], // campo sem margem inferior
                                 )
                               : Column(
-                                  children: [campo, SizedBox(height: 25)], // campo com margem inferior
+                                  children: [
+                                    campo,
+                                    SizedBox(height: 25)
+                                  ], // campo com margem inferior
                                 ),
                         ),
                       )
@@ -215,7 +243,10 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
           child: Center(
             child: Text(
               'Adicionar Produtos',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 18),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18),
             ),
           ),
         ),
@@ -241,7 +272,11 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
             ),
           ),
           Center(
-            child: Text("Adicione produtos para continuar", style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w400)),
+            child: Text("Adicione produtos para continuar",
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w400)),
           )
         ],
       ),
@@ -249,7 +284,8 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
 
     final _botaoSalvar = ElevatedButton(
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(_existeItemSemQuantidade() ? Colors.grey : Colors.green),
+        backgroundColor: MaterialStateProperty.all(
+            _existeItemSemQuantidade() ? Colors.grey : Colors.green),
         shape: MaterialStateProperty.all(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
@@ -286,7 +322,9 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
                 ),
         ),
         SizedBox(height: 10),
-        Align(alignment: Alignment.bottomCenter, child: SizedBox(height: 45, child: _botaoSalvar))
+        Align(
+            alignment: Alignment.bottomCenter,
+            child: SizedBox(height: 45, child: _botaoSalvar))
       ],
     );
 

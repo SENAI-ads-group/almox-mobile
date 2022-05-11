@@ -1,9 +1,11 @@
 import 'package:almox_mobile/src/model/produto_model.dart';
 import 'package:almox_mobile/src/model/requisicao_model.dart';
+import 'package:almox_mobile/src/pages/listagem_requisicoes/listagem_requisicoes.dart';
 import 'package:almox_mobile/src/services/requisicao_service.dart';
 import 'package:almox_mobile/src/widgets/campos/dropdown_almoxarife.dart';
 import 'package:almox_mobile/src/widgets/card_item_requisicao/card_item_requisicao_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../almox_app_theme.dart';
 
@@ -155,8 +157,24 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as RequisicaoModel;
+    List<ItemRequisicaoModel> itensRequisicao = args.itens;
+
     final Map<String, Widget> _campos = {
+      "requisitante": TextFormField(
+          initialValue: args.requisitante.pessoa.nome,
+          decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Requisitante',
+              enabled: false,
+              labelStyle: TextStyle(
+                color: Colors.black38,
+                fontWeight: FontWeight.w400,
+                fontSize: 20,
+              ))),
       "almoxarife": DropdownSearchAlmoxarife(
+        idOperadorSelecionado: args.almoxarife.id,
+        enabled: false,
         onChanged: (OperadorModel? value) =>
             setState(() => _almoxarifeSelecionado = value),
         validator: (OperadorModel? value) {
@@ -165,13 +183,38 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
         },
       ),
       "departamento": DropdownSearchDepartamento(
+        enabled: false,
+        idDepartamentoSelecionado: args.departamento.id,
         onChanged: (DepartamentoModel? value) =>
             setState(() => _departamentoSelecionado = value),
         validator: (DepartamentoModel? value) {
           if (value == null) return "Campo obrigatório";
           return null;
         },
-      )
+      ),
+      "dataRequisicao": TextFormField(
+          initialValue:
+              DateFormat("dd 'de' MMMM 'de' y").format(args.dataRequisicao),
+          decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Data Requisição',
+              enabled: false,
+              labelStyle: TextStyle(
+                color: Colors.black38,
+                fontWeight: FontWeight.w400,
+                fontSize: 20,
+              ))),
+      "status": TextFormField(
+          initialValue: args.status.name,
+          decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Status',
+              enabled: false,
+              labelStyle: TextStyle(
+                color: Colors.black38,
+                fontWeight: FontWeight.w400,
+                fontSize: 20,
+              )))
     };
 
     final _cardFormulario = Card(
@@ -239,10 +282,10 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
             ),
           ),
-          onPressed: () => _pesquisarProdutos(context),
+          onPressed: () => itensRequisicao,
           child: Center(
             child: Text(
-              'Adicionar Produtos',
+              'Listar produtos',
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
@@ -332,7 +375,7 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
       onWillPop: () => _onWillPop(context),
       child: Scaffold(
         backgroundColor: AlmoxAppTheme.background,
-        appBar: AppBar(title: Text("Criar Requisição")),
+        appBar: AppBar(title: Text("Atender Requisição")),
         body: Padding(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
           child: _carregando ? ContainerCarregando(child: _body) : _body,

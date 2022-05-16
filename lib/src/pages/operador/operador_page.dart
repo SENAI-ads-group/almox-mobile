@@ -1,28 +1,25 @@
-import 'package:almox_mobile/src/pages/home/home_controller.dart';
-import 'package:almox_mobile/src/pages/home/home_page.dart';
-import 'package:almox_mobile/src/widgets/botoes_navegacao/botao_navegacao_operador_widget.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class OperadorPage extends PaginaNavegacao {
-  OperadorPage() : super(child: _OperadorPage(), botaoNavegacao: BotaoNavegacaoOperador());
+class OperadorPage extends StatefulWidget {
+  OperadorPage({Key? key}) : super(key: key);
+
+  @override
+  State<OperadorPage> createState() => _OperadorPageState();
 }
 
-class _OperadorPage extends StatelessWidget {
-  final HomeController homeController = HomeController();
-  _OperadorPage({Key? key}) : super(key: key);
+class _OperadorPageState extends State<OperadorPage> {
+  @override
+  void initState() {
+    super.initState();
+    //homeController.indexPaginaChangeNotifier.addListener(() => setState(() {}));
+  }
 
   @override
   Widget build(BuildContext context) {
-    homeController.indexPaginaChangeNotifier.addListener(() {
-      if (homeController.indexPaginaAtual == 1) {
-        homeController.setBotaoAcao(floatingActionButton: null);
-      }
-    });
-
-    return Material(
-      child: SizedBox(
+    return Scaffold(
+      body: SizedBox(
         width: double.infinity,
         height: double.infinity,
         child: Padding(

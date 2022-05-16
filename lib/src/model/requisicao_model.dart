@@ -25,20 +25,15 @@ class RequisicaoModel {
     List<dynamic> jsonItens = json['itens'] as List<dynamic>;
 
     return RequisicaoModel(
-        id: json['id'],
-        status: StatusRequisicao.values.firstWhere(
-            (status) => status.toString() == json['status'],
-            orElse: (() => StatusRequisicao.aguardandoAtendimento)),
-        departamento: _DepartamentoRequisicao.fromJson(json['departamento']),
-        dataRequisicao: DateTime.parse(json['dataRequisicao']),
-        dataEntrega: json['dataEntrega'] == null
-            ? null
-            : DateTime.parse(json['dataEntrega']),
-        requisitante: _OperadorDaRequisicao.fromJson(json['requisitante']),
-        almoxarife: _OperadorDaRequisicao.fromJson(json['almoxarife']),
-        itens: jsonItens
-            .map((jsonItem) => ItemRequisicaoModel.fromJson(jsonItem))
-            .toList());
+      id: json['id'],
+      status: StatusRequisicao.values.firstWhere((status) => status.name == json['status'], orElse: (() => StatusRequisicao.AGUARDANDO_ATENDIMENTO)),
+      departamento: _DepartamentoRequisicao.fromJson(json['departamento']),
+      dataRequisicao: DateTime.parse(json['dataRequisicao']),
+      dataEntrega: json['dataEntrega'] == null ? null : DateTime.parse(json['dataEntrega']),
+      requisitante: _OperadorDaRequisicao.fromJson(json['requisitante']),
+      almoxarife: _OperadorDaRequisicao.fromJson(json['almoxarife']),
+      itens: jsonItens.map((jsonItem) => ItemRequisicaoModel.fromJson(jsonItem)).toList(),
+    );
   }
 }
 
@@ -47,10 +42,7 @@ class CriarRequisicao {
   final String idDepartamento;
   final List<CriarRequisicaoItem> itens;
 
-  CriarRequisicao(
-      {required this.idOperadorAlmoxarife,
-      required this.idDepartamento,
-      required this.itens});
+  CriarRequisicao({required this.idOperadorAlmoxarife, required this.idDepartamento, required this.itens});
 }
 
 class CriarRequisicaoItem {
@@ -75,8 +67,7 @@ class _DepartamentoRequisicao {
   });
 
   factory _DepartamentoRequisicao.fromJson(Map<String, dynamic> json) {
-    return _DepartamentoRequisicao(
-        id: json['id'], descricao: json['descricao']);
+    return _DepartamentoRequisicao(id: json['id'], descricao: json['descricao']);
   }
 }
 
@@ -90,11 +81,7 @@ class _OperadorDaRequisicao {
     Map<String, dynamic> jsonPessoa = json['pessoa'];
     return _OperadorDaRequisicao(
       id: json['id'],
-      pessoa: _PessoaOperadorDepartamento(
-          id: jsonPessoa['id'],
-          cpf: jsonPessoa['cpf'],
-          nome: jsonPessoa['nome'],
-          email: jsonPessoa['email']),
+      pessoa: _PessoaOperadorDepartamento(id: jsonPessoa['id'], cpf: jsonPessoa['cpf'], nome: jsonPessoa['nome'], email: jsonPessoa['email']),
     );
   }
 }
@@ -105,11 +92,7 @@ class _PessoaOperadorDepartamento {
   final String nome;
   final String email;
 
-  _PessoaOperadorDepartamento(
-      {required this.id,
-      required this.cpf,
-      required this.nome,
-      required this.email});
+  _PessoaOperadorDepartamento({required this.id, required this.cpf, required this.nome, required this.email});
 }
 
 class ItemRequisicaoModel {
@@ -117,8 +100,7 @@ class ItemRequisicaoModel {
   final _ProdutoItem produto;
   num quantidade;
 
-  ItemRequisicaoModel(
-      {this.id, required this.produto, required this.quantidade});
+  ItemRequisicaoModel({this.id, required this.produto, required this.quantidade});
 
   factory ItemRequisicaoModel.fromJson(Map<String, dynamic> json) {
     Map<String, dynamic> jsonProduto = json['produto'];
@@ -137,16 +119,13 @@ class ItemRequisicaoModel {
         quantidade: json['quantidade']);
   }
 
-  factory ItemRequisicaoModel.fromProdutoModel(
-      ProdutoModel produtoModel, num quantidade) {
+  factory ItemRequisicaoModel.fromProdutoModel(ProdutoModel produtoModel, num quantidade) {
     return ItemRequisicaoModel(
         produto: _ProdutoItem(
             id: produtoModel.id,
             descricao: produtoModel.descricao,
             codigoBarras: produtoModel.codigoBarras,
-            grupo: _GrupoItem(
-                id: produtoModel.grupo.id,
-                descricao: produtoModel.grupo.descricao),
+            grupo: _GrupoItem(id: produtoModel.grupo.id, descricao: produtoModel.grupo.descricao),
             unidadeMedida: produtoModel.unidadeMedida),
         quantidade: quantidade);
   }
@@ -159,12 +138,7 @@ class _ProdutoItem {
   final _GrupoItem grupo;
   final String unidadeMedida;
 
-  _ProdutoItem(
-      {required this.id,
-      required this.descricao,
-      required this.codigoBarras,
-      required this.grupo,
-      required this.unidadeMedida});
+  _ProdutoItem({required this.id, required this.descricao, required this.codigoBarras, required this.grupo, required this.unidadeMedida});
 }
 
 class _GrupoItem {

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:almox_mobile/src/model/operador_model.dart';
 import 'package:almox_mobile/src/services/configuracao_service.dart';
 import 'package:almox_mobile/src/services/http_service.dart' as _http;
 import 'package:http/http.dart' as http;
@@ -11,6 +12,7 @@ class AutenticacaoService {
   AutenticacaoService.internal();
 
   final ConfiguracaoService _configuracaoService = ConfiguracaoService();
+  OperadorModel? _operadorLogado;
 
   Future<bool> login({required String usuario, required String senha}) async {
     final clientId = dotenv.env['CLIENT_ID'];
@@ -34,17 +36,17 @@ class AutenticacaoService {
     return response.statusCode == 200;
   }
 
-  Future<bool> isTokenValido() async {
+  Future<http.Response?> _checkarToken() async {
     final Map<String, dynamic>? configuracoes = (await _configuracaoService.configuracao);
-    if (configuracoes == null) return false;
+    if (configuracoes == null) return null;
 
     final Map? configuracoesAutenticacao = configuracoes["autenticacao"] as Map?;
-    if (configuracoesAutenticacao == null) return false;
+    if (configuracoesAutenticacao == null) return null;
 
     String? token = configuracoesAutenticacao["access_token"];
-    if (token == null) return false;
+    if (token == null) return null;
 
-    final response = await http
+    return await http
         .post(
           _http.parseUrl('/oauth/check_token', {'token': token}),
         )
@@ -52,11 +54,26 @@ class AutenticacaoService {
           const Duration(seconds: 2),
           onTimeout: () => http.Response('Error', 408),
         );
+  }
+
+  Future<bool> isTokenValido() async {
+    final response = await _checkarToken();
+    if (response == null) return false;
     return response.statusCode == 200;
   }
 
   Future<String> get accessToken async {
     final Map<String, dynamic> configuracoes = (await _configuracaoService.configuracao ?? {})["autenticacao"];
     return configuracoes["access_token"];
+  }
+
+  Future<OperadorModel?> get operadorLogado async {
+    if (_operadorLogado != null) return _operadorLogado;
+
+    final response = await _checkarToken();
+    if (response == null || response.statusCode != 200) return null;
+
+    _operadorLogado = OperadorModel.fromJson(json.decode(response.body)['operador']);
+    return _operadorLogado;
   }
 }

@@ -32,8 +32,12 @@ class AutenticacaoService {
       headers: headers,
       body: formMap,
     );
-    _configuracaoService.atualizarConfiguracao("autenticacao", json.decode(response.body));
+    await _configuracaoService.atualizarConfiguracao("autenticacao", json.decode(response.body));
     return response.statusCode == 200;
+  }
+
+  Future<void> logout() async {
+    await _configuracaoService.atualizarConfiguracao("autenticacao", {"access_token": null});
   }
 
   Future<http.Response?> _checkarToken() async {

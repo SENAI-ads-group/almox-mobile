@@ -3,7 +3,7 @@ import 'package:almox_mobile/src/model/status_requisicao.dart';
 
 class RequisicaoModel {
   final String id;
-  final StatusRequisicao status;
+  StatusRequisicao status;
   final _DepartamentoRequisicao departamento;
   final DateTime dataRequisicao;
   final DateTime? dataEntrega;

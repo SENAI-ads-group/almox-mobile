@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
       child: Padding(
         padding: EdgeInsets.all(4),
         child: InkWell(
-          onTap: () => _autenticacaoService.logout().then((_) => Navigator.pushNamed(context, '/login')),
+          onTap: () => Navigator.pushNamed(context, '/login'),
           child: Icon(
             Icons.exit_to_app_rounded,
             size: 25,
@@ -133,6 +133,8 @@ class _HomePageState extends State<HomePage> {
         )
       ],
     );
+
+    if (_operadorLogado != null) print(_operadorLogado!.funcoes.reduce((acc, curr) => '$acc, $curr'));
 
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,

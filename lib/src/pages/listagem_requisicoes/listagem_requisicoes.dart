@@ -1,9 +1,6 @@
 import 'package:almox_mobile/src/model/status_requisicao.dart';
 import 'package:almox_mobile/src/services/requisicao_service.dart';
 import 'package:flutter/material.dart';
-import 'package:almox_mobile/src/pages/home/home_page.dart';
-import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
 import '../../model/requisicao_model.dart';
 
@@ -11,8 +8,7 @@ class ListagemRequisicoesPage extends StatefulWidget {
   const ListagemRequisicoesPage({Key? key}) : super(key: key);
 
   @override
-  State<ListagemRequisicoesPage> createState() =>
-      _ListagemRequisicoesPageState();
+  State<ListagemRequisicoesPage> createState() => _ListagemRequisicoesPageState();
 }
 
 class _ListagemRequisicoesPageState extends State<ListagemRequisicoesPage> {
@@ -23,9 +19,7 @@ class _ListagemRequisicoesPageState extends State<ListagemRequisicoesPage> {
   @override
   void initState() {
     super.initState();
-    requisicaoService
-        .fetchRequisicao()
-        .then((value) => setState(() => requisicoes = value));
+    requisicaoService.fetchRequisicao().then((value) => setState(() => requisicoes = value));
   }
 
   PreferredSize _appBar(BuildContext context) {
@@ -37,18 +31,15 @@ class _ListagemRequisicoesPageState extends State<ListagemRequisicoesPage> {
             isScrollable: true,
             tabs: const <Tab>[
               Tab(
-                child: Text('Minhas Requisições',
-                    style: TextStyle(color: Colors.white, fontSize: 16)),
+                child: Text('Minhas Requisições', style: TextStyle(color: Colors.white, fontSize: 16)),
               ),
               Tab(
-                child: Text('Atendimento de Requisições',
-                    style: TextStyle(color: Colors.white, fontSize: 16)),
+                child: Text('Atendimento de Requisições', style: TextStyle(color: Colors.white, fontSize: 16)),
               )
             ],
           ),
         ),
-        preferredSize: Size(MediaQuery.of(context).size.width,
-            AppBar().preferredSize.height + 50));
+        preferredSize: Size(MediaQuery.of(context).size.width, AppBar().preferredSize.height + 50));
   }
 
   Card _cardRequisicao(RequisicaoModel requisicao) {
@@ -65,8 +56,7 @@ class _ListagemRequisicoesPageState extends State<ListagemRequisicoesPage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: ListTile(
-                onTap: () => Navigator.of(context)
-                    .pushNamed('/atenderRequisicao', arguments: requisicao),
+                onTap: () => Navigator.of(context).pushNamed('/atenderRequisicao', arguments: requisicao),
                 leading: Icon(Icons.check),
                 title: Text(
                   requisicao.departamento.descricao,
@@ -94,9 +84,7 @@ class _ListagemRequisicoesPageState extends State<ListagemRequisicoesPage> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.red.withOpacity(0.2),
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(15),
-                            topRight: Radius.circular(15)),
+                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15), topRight: Radius.circular(15)),
                       ),
                       child: Padding(
                           padding: EdgeInsets.all(4),

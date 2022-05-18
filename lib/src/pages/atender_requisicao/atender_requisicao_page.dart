@@ -1,10 +1,13 @@
+import 'dart:ffi';
+
 import 'package:almox_mobile/src/model/produto_model.dart';
 import 'package:almox_mobile/src/model/requisicao_model.dart';
-import 'package:almox_mobile/src/pages/listagem_requisicoes/listagem_requisicoes.dart';
+import 'package:almox_mobile/src/model/status_requisicao.dart';
 import 'package:almox_mobile/src/services/requisicao_service.dart';
 import 'package:almox_mobile/src/widgets/campos/dropdown_almoxarife.dart';
 import 'package:almox_mobile/src/widgets/card_item_requisicao/card_item_requisicao_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:intl/intl.dart';
 
 import '../../almox_app_theme.dart';
@@ -30,9 +33,7 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
   OperadorModel? _almoxarifeSelecionado;
   bool _carregando = false;
 
-  bool _existeItemSemQuantidade() =>
-      itensSelecionados.isEmpty ||
-      itensSelecionados.any((item) => item.quantidade <= 0);
+  bool _existeItemSemQuantidade() => itensSelecionados.isEmpty || itensSelecionados.any((item) => item.quantidade <= 0);
 
   Future<bool> _onWillPop(BuildContext context) {
     if (itensSelecionados.isNotEmpty) {
@@ -42,16 +43,12 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
   }
 
   void _pesquisarProdutos(BuildContext context) async {
-    List<ProdutoModel>? produtosSelecionadosNaPesquisa =
-        await Navigator.pushNamed(context, '/selecionarProdutos')
-            as List<ProdutoModel>?;
+    List<ProdutoModel>? produtosSelecionadosNaPesquisa = await Navigator.pushNamed(context, '/selecionarProdutos') as List<ProdutoModel>?;
 
     setState(() {
       itensSelecionados.addAll((produtosSelecionadosNaPesquisa ?? [])
-          .where((ProdutoModel produto) =>
-              !itensSelecionados.any((i) => i.produto.id == produto.id))
-          .map((ProdutoModel produto) =>
-              ItemRequisicaoModel.fromProdutoModel(produto, 0)));
+          .where((ProdutoModel produto) => !itensSelecionados.any((i) => i.produto.id == produto.id))
+          .map((ProdutoModel produto) => ItemRequisicaoModel.fromProdutoModel(produto, 0)));
     });
   }
 
@@ -62,8 +59,7 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
     return CardItemRequisicao(
       indexItem: indexItem,
       itemRequisicao: itemRequisicao,
-      onQuantidadeChanged: (double valor) =>
-          setState(() => itemRequisicao.quantidade = valor),
+      onQuantidadeChanged: (double valor) => setState(() => itemRequisicao.quantidade = valor),
       onAdicionarPressed: () => setState(() => itemRequisicao.quantidade += 1),
       onRemoverPressed: () async {
         if (itemRequisicao.quantidade <= 0) {
@@ -71,26 +67,22 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
             context: context,
             builder: (BuildContext context) => AlertDialog(
               title: const Text('Itens'),
-              content:
-                  Text('Tem certeza que deseja remover este item da lista?'),
+              content: Text('Tem certeza que deseja remover este item da lista?'),
               actions: <Widget>[
                 ElevatedButton(
-                  style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.red)),
+                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red)),
                   onPressed: () => Navigator.pop(context, 'Não'),
                   child: const Text('Não'),
                 ),
                 ElevatedButton(
-                  style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.green)),
+                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.green)),
                   onPressed: () => Navigator.pop(context, 'Sim'),
                   child: const Text('Sim'),
                 ),
               ],
             ),
           );
-          if (resposta == 'Sim')
-            setState(() => itensSelecionados.removeAt(indexItem));
+          if (resposta == 'Sim') setState(() => itensSelecionados.removeAt(indexItem));
         } else {
           setState(() => itemRequisicao.quantidade -= 1);
         }
@@ -98,71 +90,24 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
     );
   }
 
-  void _onSalvar() async {
-    final formularioValido = _formKey.currentState?.validate() ?? false;
-    if (!formularioValido) return;
-
-    final requestCriarRequisicao = CriarRequisicao(
-      idOperadorAlmoxarife: _almoxarifeSelecionado!.id,
-      idDepartamento: _departamentoSelecionado!.id,
-      itens: itensSelecionados
-          .map(
-            (ItemRequisicaoModel item) => CriarRequisicaoItem(
-              idProduto: item.produto.id,
-              quantidade: item.quantidade,
-            ),
-          )
-          .toList(),
-    );
-
-    final _snackbarSucesso = SnackBar(
-      content: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: const [
-          Text('Requisição criada com sucesso'),
-          Icon(Icons.check, color: Colors.white),
-        ],
-      ),
-      duration: Duration(milliseconds: 350),
-      backgroundColor: Colors.green,
-    );
-
-    final _snackbarErro = SnackBar(
-      content: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: const [
-          Text('Não foi possível criar a requisição'),
-          Icon(Icons.error)
-        ],
-      ),
-      backgroundColor: Colors.red,
-    );
-
-    if (!_carregando) {
-      setState(() => _carregando = true);
-      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-      try {
-        FocusManager.instance.primaryFocus?.unfocus();
-        await requisicaoService.criarRequisicao(requestCriarRequisicao);
-
-        ScaffoldMessenger.of(context).showSnackBar(_snackbarSucesso);
-        Navigator.pop(context);
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(_snackbarErro);
-      } finally {
-        setState(() => _carregando = false);
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as RequisicaoModel;
-    List<ItemRequisicaoModel> itensRequisicao = args.itens;
+    final RequisicaoModel requisicaoModel = args;
+    itensSelecionados = requisicaoModel.itens;
+    bool _statusSpeedDial = false;
+
+    setState(() {
+      if (requisicaoModel.status == StatusRequisicao.CANCELADA) {
+        _statusSpeedDial = false;
+      } else {
+        _statusSpeedDial = true;
+      }
+    });
 
     final Map<String, Widget> _campos = {
       "requisitante": TextFormField(
-          initialValue: args.requisitante.pessoa.nome,
+          initialValue: requisicaoModel.requisitante.pessoa.nome,
           decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Requisitante',
@@ -173,10 +118,9 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
                 fontSize: 20,
               ))),
       "almoxarife": DropdownSearchAlmoxarife(
-        idOperadorSelecionado: args.almoxarife.id,
+        idOperadorSelecionado: requisicaoModel.almoxarife.id,
         enabled: false,
-        onChanged: (OperadorModel? value) =>
-            setState(() => _almoxarifeSelecionado = value),
+        onChanged: (OperadorModel? value) => setState(() => _almoxarifeSelecionado = value),
         validator: (OperadorModel? value) {
           if (value == null) return "Campo obrigatório";
           return null;
@@ -184,17 +128,15 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
       ),
       "departamento": DropdownSearchDepartamento(
         enabled: false,
-        idDepartamentoSelecionado: args.departamento.id,
-        onChanged: (DepartamentoModel? value) =>
-            setState(() => _departamentoSelecionado = value),
+        idDepartamentoSelecionado: requisicaoModel.departamento.id,
+        onChanged: (DepartamentoModel? value) => setState(() => _departamentoSelecionado = value),
         validator: (DepartamentoModel? value) {
           if (value == null) return "Campo obrigatório";
           return null;
         },
       ),
       "dataRequisicao": TextFormField(
-          initialValue:
-              DateFormat("dd 'de' MMMM 'de' y").format(args.dataRequisicao),
+          initialValue: DateFormat("dd 'de' MMMM 'de' y", "pt_BR").format(requisicaoModel.dataRequisicao),
           decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Data Requisição',
@@ -205,7 +147,7 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
                 fontSize: 20,
               ))),
       "status": TextFormField(
-          initialValue: args.status.name,
+          initialValue: requisicaoModel.status.descricao,
           decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Status',
@@ -223,19 +165,11 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text('Cabeçalho',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-                ]),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: const [
+              Text('Cabeçalho', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            ]),
             Row(mainAxisAlignment: MainAxisAlignment.start, children: const [
-              Text('Informações da Requisição',
-                  style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w400)),
+              Text('Informações da Requisição', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w400)),
             ]),
             SizedBox(height: 20),
             Form(
@@ -251,15 +185,10 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
                           index,
                           index == _campos.values.length - 1
                               ? Column(
-                                  children: [
-                                    campo
-                                  ], // campo sem margem inferior
+                                  children: [campo], // campo sem margem inferior
                                 )
                               : Column(
-                                  children: [
-                                    campo,
-                                    SizedBox(height: 25)
-                                  ], // campo com margem inferior
+                                  children: [campo, SizedBox(height: 25)], // campo com margem inferior
                                 ),
                         ),
                       )
@@ -282,14 +211,11 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
             ),
           ),
-          onPressed: () => itensRequisicao,
+          onPressed: () => _pesquisarProdutos(context),
           child: Center(
             child: Text(
               'Listar produtos',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18),
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 18),
             ),
           ),
         ),
@@ -315,39 +241,9 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
             ),
           ),
           Center(
-            child: Text("Adicione produtos para continuar",
-                style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w400)),
+            child: Text("Adicione produtos para continuar", style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w400)),
           )
         ],
-      ),
-    );
-
-    final _botaoSalvar = ElevatedButton(
-      style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(
-            _existeItemSemQuantidade() ? Colors.grey : Colors.green),
-        shape: MaterialStateProperty.all(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-        ),
-      ),
-      onPressed: _existeItemSemQuantidade() ? null : _onSalvar,
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.save),
-            SizedBox(width: 5),
-            Text(
-              'Salvar',
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
-            )
-          ],
-        ),
       ),
     );
 
@@ -365,9 +261,7 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
                 ),
         ),
         SizedBox(height: 10),
-        Align(
-            alignment: Alignment.bottomCenter,
-            child: SizedBox(height: 45, child: _botaoSalvar))
+        Align(alignment: Alignment.bottomCenter, child: SizedBox(height: 45))
       ],
     );
 
@@ -379,6 +273,55 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
         body: Padding(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
           child: _carregando ? ContainerCarregando(child: _body) : _body,
+        ),
+        floatingActionButton: SpeedDial(
+          elevation: 20,
+          activeLabel: _body,
+          animatedIcon: AnimatedIcons.menu_close,
+          animatedIconTheme: IconThemeData(size: 22.0),
+          visible: _statusSpeedDial,
+          curve: Curves.bounceIn,
+          children: [
+            SpeedDialChild(
+              child: Icon(Icons.ads_click_outlined, color: Colors.white),
+              backgroundColor: Colors.yellow,
+              onTap: () => setState(() {
+                if (requisicaoModel.status != StatusRequisicao.AGUARDANDO_ATENDIMENTO) {
+                } else {
+                  requisicaoService.atenderRequisicao(requisicaoModel.id);
+                }
+              }),
+              label: 'ATENDER',
+              labelStyle: TextStyle(fontWeight: FontWeight.w500),
+              labelBackgroundColor: Colors.yellow,
+            ),
+            SpeedDialChild(
+              child: Icon(Icons.delivery_dining_sharp, color: Colors.white),
+              backgroundColor: Colors.green,
+              onTap: () => setState(() {
+                if (requisicaoModel.status != StatusRequisicao.EM_ATENDIMENTO) {
+                } else {
+                  requisicaoService.entregarRequisicao(requisicaoModel.id);
+                }
+              }),
+              label: 'ENTREGAR',
+              labelStyle: TextStyle(fontWeight: FontWeight.w500),
+              labelBackgroundColor: Colors.green,
+            ),
+            SpeedDialChild(
+              child: Icon(Icons.cancel_outlined, color: Colors.white),
+              backgroundColor: Colors.red,
+              onTap: () => setState(() {
+                if (requisicaoModel.status != StatusRequisicao.CANCELADA) {
+                } else {
+                  requisicaoService.cancelarRequisicao(requisicaoModel.id);
+                }
+              }),
+              label: 'CANCELAR',
+              labelStyle: TextStyle(fontWeight: FontWeight.w500),
+              labelBackgroundColor: Colors.red,
+            ),
+          ],
         ),
       ),
     );

@@ -2,7 +2,6 @@ import 'package:almox_mobile/src/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:almox_mobile/src/routes/routes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<void> main() async {
   await dotenv.load();
@@ -17,11 +16,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
-      ],
-      supportedLocales: [const Locale('pt', 'BR')],
       debugShowCheckedModeBanner: false,
       title: 'ALMOX MOBILE',
       theme: ThemeData(

@@ -161,7 +161,7 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
                 fontSize: 20,
               ))),
       "status": TextFormField(
-          initialValue: requisicaoModel.status.name,
+          initialValue: requisicaoModel.status.descricao,
           decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Status',
@@ -334,8 +334,7 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
               child: Icon(Icons.delivery_dining_sharp, color: Colors.white),
               backgroundColor: Colors.green,
               onTap: () => setState(() {
-                if (requisicaoModel.status !=
-                    StatusRequisicao.AGUARDANDO_ATENDIMENTO) {
+                if (requisicaoModel.status != StatusRequisicao.EM_ATENDIMENTO) {
                 } else {
                   requisicaoService.entregarRequisicao(requisicaoModel.id);
                 }

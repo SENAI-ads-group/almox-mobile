@@ -14,6 +14,7 @@ import '../../almox_app_theme.dart';
 
 import '../../model/departamento_model.dart';
 import '../../model/operador_model.dart';
+import '../../services/autenticacao_service.dart';
 import '../../widgets/campos/dropdown_departamento.dart';
 import '../../widgets/container_carregando_widget.dart';
 
@@ -27,13 +28,22 @@ class AtenderRequisicaoPage extends StatefulWidget {
 class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
   final _formKey = GlobalKey<FormState>();
   final requisicaoService = RequisicaoService();
+  final AutenticacaoService _autenticacaoService = AutenticacaoService();
 
   List<ItemRequisicaoModel> itensSelecionados = [];
   DepartamentoModel? _departamentoSelecionado;
   OperadorModel? _almoxarifeSelecionado;
   bool _carregando = false;
+  OperadorModel? _operadorLogado;
 
   bool _existeItemSemQuantidade() => itensSelecionados.isEmpty || itensSelecionados.any((item) => item.quantidade <= 0);
+
+  @override
+  void initState() {
+    super.initState();
+    _autenticacaoService.operadorLogado
+        .then((value) => setState(() => _operadorLogado = value));
+  }
 
   Future<bool> _onWillPop(BuildContext context) {
     if (itensSelecionados.isNotEmpty) {
@@ -98,7 +108,8 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
     bool _statusSpeedDial = false;
 
     setState(() {
-      if (requisicaoModel.status == StatusRequisicao.CANCELADA) {
+      if (requisicaoModel.status == StatusRequisicao.CANCELADA ||
+          requisicaoModel.status == StatusRequisicao.ENTREGUE) {
         _statusSpeedDial = false;
       } else {
         _statusSpeedDial = true;
@@ -251,7 +262,6 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
       children: [
         _cardFormulario,
         SizedBox(height: 10),
-        _botaoAdicionarProduto,
         SizedBox(
           height: 175,
           child: itensSelecionados.isEmpty

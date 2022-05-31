@@ -36,7 +36,9 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
   bool _carregando = false;
   OperadorModel? _operadorLogado;
 
-  bool _existeItemSemQuantidade() => itensSelecionados.isEmpty || itensSelecionados.any((item) => item.quantidade <= 0);
+  bool _existeItemSemQuantidade() =>
+      itensSelecionados.isEmpty ||
+      itensSelecionados.any((item) => item.quantidade <= 0);
 
   @override
   void initState() {
@@ -53,12 +55,16 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
   }
 
   void _pesquisarProdutos(BuildContext context) async {
-    List<ProdutoModel>? produtosSelecionadosNaPesquisa = await Navigator.pushNamed(context, '/selecionarProdutos') as List<ProdutoModel>?;
+    List<ProdutoModel>? produtosSelecionadosNaPesquisa =
+        await Navigator.pushNamed(context, '/selecionarProdutos')
+            as List<ProdutoModel>?;
 
     setState(() {
       itensSelecionados.addAll((produtosSelecionadosNaPesquisa ?? [])
-          .where((ProdutoModel produto) => !itensSelecionados.any((i) => i.produto.id == produto.id))
-          .map((ProdutoModel produto) => ItemRequisicaoModel.fromProdutoModel(produto, 0)));
+          .where((ProdutoModel produto) =>
+              !itensSelecionados.any((i) => i.produto.id == produto.id))
+          .map((ProdutoModel produto) =>
+              ItemRequisicaoModel.fromProdutoModel(produto, 0)));
     });
   }
 
@@ -69,7 +75,8 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
     return CardItemRequisicao(
       indexItem: indexItem,
       itemRequisicao: itemRequisicao,
-      onQuantidadeChanged: (double valor) => setState(() => itemRequisicao.quantidade = valor),
+      onQuantidadeChanged: (double valor) =>
+          setState(() => itemRequisicao.quantidade = valor),
       onAdicionarPressed: () => setState(() => itemRequisicao.quantidade += 1),
       onRemoverPressed: () async {
         if (itemRequisicao.quantidade <= 0) {
@@ -77,25 +84,44 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
             context: context,
             builder: (BuildContext context) => AlertDialog(
               title: const Text('Itens'),
-              content: Text('Tem certeza que deseja remover este item da lista?'),
+              content:
+                  Text('Tem certeza que deseja remover este item da lista?'),
               actions: <Widget>[
                 ElevatedButton(
-                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red)),
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.red)),
                   onPressed: () => Navigator.pop(context, 'Não'),
                   child: const Text('Não'),
                 ),
                 ElevatedButton(
-                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.green)),
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.green)),
                   onPressed: () => Navigator.pop(context, 'Sim'),
                   child: const Text('Sim'),
                 ),
               ],
             ),
           );
-          if (resposta == 'Sim') setState(() => itensSelecionados.removeAt(indexItem));
+          if (resposta == 'Sim')
+            setState(() => itensSelecionados.removeAt(indexItem));
         } else {
           setState(() => itemRequisicao.quantidade -= 1);
         }
+      },
+    );
+  }
+
+  CardItemRequisicao _cardItemRequisicao2(ItemRequisicaoModel item) {
+    int indexItem = itensSelecionados.indexOf(item);
+    ItemRequisicaoModel itemRequisicao = itensSelecionados.elementAt(indexItem);
+
+    return CardItemRequisicao(
+      indexItem: indexItem,
+      itemRequisicao: itemRequisicao,
+      onQuantidadeChanged: (double valor) => setState(() {}),
+      onAdicionarPressed: activate,
+      onRemoverPressed: () async {
+        setState(() => itemRequisicao.quantidade);
       },
     );
   }
@@ -131,7 +157,8 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
       "almoxarife": DropdownSearchAlmoxarife(
         idOperadorSelecionado: requisicaoModel.almoxarife.id,
         enabled: false,
-        onChanged: (OperadorModel? value) => setState(() => _almoxarifeSelecionado = value),
+        onChanged: (OperadorModel? value) =>
+            setState(() => _almoxarifeSelecionado = value),
         validator: (OperadorModel? value) {
           if (value == null) return "Campo obrigatório";
           return null;
@@ -140,14 +167,16 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
       "departamento": DropdownSearchDepartamento(
         enabled: false,
         idDepartamentoSelecionado: requisicaoModel.departamento.id,
-        onChanged: (DepartamentoModel? value) => setState(() => _departamentoSelecionado = value),
+        onChanged: (DepartamentoModel? value) =>
+            setState(() => _departamentoSelecionado = value),
         validator: (DepartamentoModel? value) {
           if (value == null) return "Campo obrigatório";
           return null;
         },
       ),
       "dataRequisicao": TextFormField(
-          initialValue: DateFormat("dd 'de' MMMM 'de' y", "pt_BR").format(requisicaoModel.dataRequisicao),
+          initialValue: DateFormat("dd 'de' MMMM 'de' y", "pt_BR")
+              .format(requisicaoModel.dataRequisicao),
           decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Data Requisição',
@@ -176,11 +205,19 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: const [
-              Text('Cabeçalho', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-            ]),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Text('Cabeçalho',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                ]),
             Row(mainAxisAlignment: MainAxisAlignment.start, children: const [
-              Text('Informações da Requisição', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w400)),
+              Text('Informações da Requisição',
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w400)),
             ]),
             SizedBox(height: 20),
             Form(
@@ -196,10 +233,15 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
                           index,
                           index == _campos.values.length - 1
                               ? Column(
-                                  children: [campo], // campo sem margem inferior
+                                  children: [
+                                    campo
+                                  ], // campo sem margem inferior
                                 )
                               : Column(
-                                  children: [campo, SizedBox(height: 25)], // campo com margem inferior
+                                  children: [
+                                    campo,
+                                    SizedBox(height: 25)
+                                  ], // campo com margem inferior
                                 ),
                         ),
                       )
@@ -226,7 +268,10 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
           child: Center(
             child: Text(
               'Listar produtos',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 18),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18),
             ),
           ),
         ),
@@ -252,26 +297,188 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
             ),
           ),
           Center(
-            child: Text("Adicione produtos para continuar", style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w400)),
+            child: Text("Adicione produtos para continuar",
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w400)),
           )
         ],
       ),
     );
 
+    void _onAtender() async {
+      final _snackbarSucesso = SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text('Requisição em atendimento!'),
+            Icon(Icons.check, color: Colors.white),
+          ],
+        ),
+        duration: Duration(milliseconds: 350),
+        backgroundColor: Colors.green,
+      );
+      final _snackbarErro = SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text('Não foi possível atender a requisição'),
+            Icon(Icons.error)
+          ],
+        ),
+        backgroundColor: Colors.red,
+      );
+
+      if (requisicaoModel.status == StatusRequisicao.AGUARDANDO_ATENDIMENTO) {
+        requisicaoService.atenderRequisicao(requisicaoModel.id);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(_snackbarErro);
+      }
+
+      if (!_carregando) {
+        setState(() => _carregando = true);
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        try {
+          FocusManager.instance.primaryFocus?.unfocus();
+          await requisicaoService.atenderRequisicao(requisicaoModel.id);
+
+          ScaffoldMessenger.of(context).showSnackBar(_snackbarSucesso);
+          Navigator.pop(context);
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(_snackbarErro);
+        } finally {
+          setState(() => _carregando = false);
+        }
+      }
+    }
+
+    void _onCancelar() async {
+      final _snackbarSucesso = SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text('Requisição cancelada com sucesso!'),
+            Icon(Icons.check, color: Colors.white),
+          ],
+        ),
+        duration: Duration(milliseconds: 350),
+        backgroundColor: Colors.green,
+      );
+      final _snackbarErro = SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text('Não foi possível cancelar a requisição'),
+            Icon(Icons.error)
+          ],
+        ),
+        backgroundColor: Colors.red,
+      );
+
+      if (requisicaoModel.status != StatusRequisicao.CANCELADA) {
+        requisicaoService.cancelarRequisicao(requisicaoModel.id);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(_snackbarErro);
+      }
+
+      if (!_carregando) {
+        setState(() => _carregando = true);
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        try {
+          FocusManager.instance.primaryFocus?.unfocus();
+          await requisicaoService.cancelarRequisicao(requisicaoModel.id);
+
+          ScaffoldMessenger.of(context).showSnackBar(_snackbarSucesso);
+          Navigator.pop(context);
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(_snackbarErro);
+        } finally {
+          setState(() => _carregando = false);
+        }
+      }
+    }
+
+    void _onEntregar() async {
+      final _snackbarSucesso = SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text('Requisição entregada com sucesso!'),
+            Icon(Icons.check, color: Colors.white),
+          ],
+        ),
+        duration: Duration(milliseconds: 350),
+        backgroundColor: Colors.green,
+      );
+      final _snackbarErro = SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text('Não foi possível entregar a requisição'),
+            Icon(Icons.error)
+          ],
+        ),
+        backgroundColor: Colors.red,
+      );
+
+      if (requisicaoModel.status != StatusRequisicao.CANCELADA) {
+        requisicaoService.entregarRequisicao(requisicaoModel.id);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(_snackbarErro);
+      }
+
+      if (!_carregando) {
+        setState(() => _carregando = true);
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        try {
+          FocusManager.instance.primaryFocus?.unfocus();
+          await requisicaoService.entregarRequisicao(requisicaoModel.id);
+
+          ScaffoldMessenger.of(context).showSnackBar(_snackbarSucesso);
+          Navigator.pop(context);
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(_snackbarErro);
+        } finally {
+          setState(() => _carregando = false);
+        }
+      }
+    }
+
     final _body = ListView(
       children: [
         _cardFormulario,
         SizedBox(height: 10),
-        SizedBox(
-          height: 175,
-          child: itensSelecionados.isEmpty
-              ? _cardInformativoSemProdutosAdicionados
-              : ListView(
-                  children: itensSelecionados.map(_cardItemRequisicao).toList(),
-                ),
-        ),
+        if (_operadorLogado != null &&
+                _operadorLogado?.id != requisicaoModel.almoxarife.id ||
+            requisicaoModel.status == StatusRequisicao.CANCELADA ||
+            requisicaoModel.status == StatusRequisicao.ENTREGUE ||
+            requisicaoModel.status == StatusRequisicao.AGUARDANDO_ATENDIMENTO)
+          SizedBox(
+            height: 175,
+            child: itensSelecionados.isEmpty
+                ? _cardInformativoSemProdutosAdicionados
+                : ListView(
+                    children:
+                        itensSelecionados.map(_cardItemRequisicao2).toList(),
+                  ),
+          ),
+        if (_operadorLogado != null &&
+            _operadorLogado?.id == requisicaoModel.almoxarife.id &&
+            requisicaoModel.status == StatusRequisicao.EM_ATENDIMENTO)
+          SizedBox(
+            height: 175,
+            child: itensSelecionados.isEmpty
+                ? _cardInformativoSemProdutosAdicionados
+                : ListView(
+                    children:
+                        itensSelecionados.map(_cardItemRequisicao).toList(),
+                  ),
+          ),
         SizedBox(height: 10),
-        Align(alignment: Alignment.bottomCenter, child: SizedBox(height: 45))
+        if (requisicaoModel.status != StatusRequisicao.CANCELADA ||
+            requisicaoModel.status != StatusRequisicao.ENTREGUE)
+          Align(alignment: Alignment.bottomCenter, child: SizedBox(height: 45))
       ],
     );
 
@@ -296,9 +503,10 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
               child: Icon(Icons.ads_click_outlined, color: Colors.white),
               backgroundColor: Colors.yellow,
               onTap: () => setState(() {
-                if (requisicaoModel.status != StatusRequisicao.AGUARDANDO_ATENDIMENTO) {
+                if (requisicaoModel.status !=
+                    StatusRequisicao.AGUARDANDO_ATENDIMENTO) {
                 } else {
-                  requisicaoService.atenderRequisicao(requisicaoModel.id);
+                  _onAtender();
                 }
               }),
               label: 'ATENDER',
@@ -311,7 +519,7 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
               onTap: () => setState(() {
                 if (requisicaoModel.status != StatusRequisicao.EM_ATENDIMENTO) {
                 } else {
-                  requisicaoService.entregarRequisicao(requisicaoModel.id);
+                  _onEntregar();
                 }
               }),
               label: 'ENTREGAR',
@@ -324,7 +532,7 @@ class _AtenderRequisicaoPageState extends State<AtenderRequisicaoPage> {
               onTap: () => setState(() {
                 if (requisicaoModel.status != StatusRequisicao.CANCELADA) {
                 } else {
-                  requisicaoService.cancelarRequisicao(requisicaoModel.id);
+                  _onCancelar();
                 }
               }),
               label: 'CANCELAR',

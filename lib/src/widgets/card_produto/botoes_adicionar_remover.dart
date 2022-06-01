@@ -5,7 +5,11 @@ class BotoesAdicionarRemoverProduto extends StatelessWidget {
   final VoidCallback onAdicionarPressed;
   final TextField? quantidadeTextField;
 
-  const BotoesAdicionarRemoverProduto({Key? key, required this.onRemoverPressed, required this.onAdicionarPressed, this.quantidadeTextField})
+  const BotoesAdicionarRemoverProduto(
+      {Key? key,
+      required this.onRemoverPressed,
+      required this.onAdicionarPressed,
+      this.quantidadeTextField})
       : super(key: key);
 
   @override

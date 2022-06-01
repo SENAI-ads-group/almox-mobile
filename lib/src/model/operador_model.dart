@@ -14,7 +14,8 @@ class OperadorModel {
   factory OperadorModel.fromJson(Map<String, dynamic> json) {
     return OperadorModel(
       id: json['id'],
-      pessoa: PessoaFisicaModel.fromJson(json['pessoa'] as Map<String, dynamic>),
+      pessoa:
+          PessoaFisicaModel.fromJson(json['pessoa'] as Map<String, dynamic>),
       funcoes: (json['funcoes'] as List<dynamic>).cast(),
     );
   }

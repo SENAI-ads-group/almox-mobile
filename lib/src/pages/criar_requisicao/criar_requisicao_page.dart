@@ -58,7 +58,6 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
     ItemRequisicaoModel itemRequisicao = itensSelecionados.elementAt(indexItem);
 
     return CardItemRequisicao(
-      indexItem: indexItem,
       itemRequisicao: itemRequisicao,
       onQuantidadeChanged: (double valor) =>
           setState(() => itemRequisicao.quantidade = valor),

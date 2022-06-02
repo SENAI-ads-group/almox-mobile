@@ -17,7 +17,8 @@ class AutenticacaoService {
   Future<bool> login({required String usuario, required String senha}) async {
     final clientId = dotenv.env['CLIENT_ID'];
     final clientSecret = dotenv.env['CLIENT_SECRET'];
-    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$clientId:$clientSecret'));
+    String basicAuth =
+        'Basic ' + base64Encode(utf8.encode('$clientId:$clientSecret'));
 
     Map<String, dynamic> formMap = {
       "grant_type": "password",
@@ -25,26 +26,55 @@ class AutenticacaoService {
       "password": senha,
     };
 
-    Map<String, String> headers = {"Content-Type": "application/x-www-form-urlencoded", "Authorization": basicAuth};
+    Map<String, String> headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": basicAuth
+    };
 
     final response = await _http.post(
       '/oauth/token',
       headers: headers,
       body: formMap,
     );
-    await _configuracaoService.atualizarConfiguracao("autenticacao", json.decode(response.body));
+    await _configuracaoService.atualizarConfiguracao(
+        "autenticacao", json.decode(response.body));
     return response.statusCode == 200;
   }
 
+  Future<void> solicitarAcesso({
+    required String nome,
+    required String cpf,
+    required String email,
+    required String senha,
+  }) async {
+    Map<String, dynamic> body = {
+      "nome": nome,
+      "cpf": cpf,
+      "email": email,
+      "senha": senha,
+    };
+
+    await _http.post(
+      '/operadores/solicitacoes-cadastro',
+      body: body,
+      headers: {
+        'Authorization': '',
+      },
+    );
+  }
+
   Future<void> logout() async {
-    await _configuracaoService.atualizarConfiguracao("autenticacao", {"access_token": null});
+    await _configuracaoService
+        .atualizarConfiguracao("autenticacao", {"access_token": null});
   }
 
   Future<http.Response?> _checkarToken() async {
-    final Map<String, dynamic>? configuracoes = (await _configuracaoService.configuracao);
+    final Map<String, dynamic>? configuracoes =
+        (await _configuracaoService.configuracao);
     if (configuracoes == null) return null;
 
-    final Map? configuracoesAutenticacao = configuracoes["autenticacao"] as Map?;
+    final Map? configuracoesAutenticacao =
+        configuracoes["autenticacao"] as Map?;
     if (configuracoesAutenticacao == null) return null;
 
     String? token = configuracoesAutenticacao["access_token"];
@@ -67,7 +97,8 @@ class AutenticacaoService {
   }
 
   Future<String> get accessToken async {
-    final Map<String, dynamic> configuracoes = (await _configuracaoService.configuracao ?? {})["autenticacao"];
+    final Map<String, dynamic> configuracoes =
+        (await _configuracaoService.configuracao ?? {})["autenticacao"];
     return configuracoes["access_token"];
   }
 
@@ -77,7 +108,8 @@ class AutenticacaoService {
     final response = await _checkarToken();
     if (response == null || response.statusCode != 200) return null;
 
-    _operadorLogado = OperadorModel.fromJson(json.decode(response.body)['operador']);
+    _operadorLogado =
+        OperadorModel.fromJson(json.decode(response.body)['operador']);
     return _operadorLogado;
   }
 }

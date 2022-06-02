@@ -10,29 +10,38 @@ class RequisicaoModel {
   final _OperadorDaRequisicao requisitante;
   final _OperadorDaRequisicao almoxarife;
   final List<ItemRequisicaoModel> itens;
+  final String? codigoConfirmacao;
 
-  RequisicaoModel(
-      {required this.id,
-      required this.status,
-      required this.departamento,
-      required this.dataRequisicao,
-      this.dataEntrega,
-      required this.requisitante,
-      required this.almoxarife,
-      required this.itens});
+  RequisicaoModel({
+    required this.id,
+    required this.status,
+    required this.departamento,
+    required this.dataRequisicao,
+    this.dataEntrega,
+    required this.requisitante,
+    required this.almoxarife,
+    required this.itens,
+    this.codigoConfirmacao,
+  });
 
   factory RequisicaoModel.fromJson(Map<String, dynamic> json) {
     List<dynamic> jsonItens = json['itens'] as List<dynamic>;
-
     return RequisicaoModel(
       id: json['id'],
-      status: StatusRequisicao.values.firstWhere((status) => status.name == json['status'], orElse: (() => StatusRequisicao.AGUARDANDO_ATENDIMENTO)),
+      status: StatusRequisicao.values.firstWhere(
+          (status) => status.name == json['status'],
+          orElse: (() => StatusRequisicao.AGUARDANDO_ATENDIMENTO)),
       departamento: _DepartamentoRequisicao.fromJson(json['departamento']),
       dataRequisicao: DateTime.parse(json['dataRequisicao']),
-      dataEntrega: json['dataEntrega'] == null ? null : DateTime.parse(json['dataEntrega']),
+      dataEntrega: json['dataEntrega'] == null
+          ? null
+          : DateTime.parse(json['dataEntrega']),
       requisitante: _OperadorDaRequisicao.fromJson(json['requisitante']),
       almoxarife: _OperadorDaRequisicao.fromJson(json['almoxarife']),
-      itens: jsonItens.map((jsonItem) => ItemRequisicaoModel.fromJson(jsonItem)).toList(),
+      itens: jsonItens
+          .map((jsonItem) => ItemRequisicaoModel.fromJson(jsonItem))
+          .toList(),
+      codigoConfirmacao: json['codigoConfirmacao'],
     );
   }
 }
@@ -42,7 +51,10 @@ class CriarRequisicao {
   final String idDepartamento;
   final List<CriarRequisicaoItem> itens;
 
-  CriarRequisicao({required this.idOperadorAlmoxarife, required this.idDepartamento, required this.itens});
+  CriarRequisicao(
+      {required this.idOperadorAlmoxarife,
+      required this.idDepartamento,
+      required this.itens});
 }
 
 class CriarRequisicaoItem {
@@ -67,7 +79,8 @@ class _DepartamentoRequisicao {
   });
 
   factory _DepartamentoRequisicao.fromJson(Map<String, dynamic> json) {
-    return _DepartamentoRequisicao(id: json['id'], descricao: json['descricao']);
+    return _DepartamentoRequisicao(
+        id: json['id'], descricao: json['descricao']);
   }
 }
 
@@ -81,7 +94,11 @@ class _OperadorDaRequisicao {
     Map<String, dynamic> jsonPessoa = json['pessoa'];
     return _OperadorDaRequisicao(
       id: json['id'],
-      pessoa: _PessoaOperadorDepartamento(id: jsonPessoa['id'], cpf: jsonPessoa['cpf'], nome: jsonPessoa['nome'], email: jsonPessoa['email']),
+      pessoa: _PessoaOperadorDepartamento(
+          id: jsonPessoa['id'],
+          cpf: jsonPessoa['cpf'],
+          nome: jsonPessoa['nome'],
+          email: jsonPessoa['email']),
     );
   }
 }
@@ -92,58 +109,71 @@ class _PessoaOperadorDepartamento {
   final String nome;
   final String email;
 
-  _PessoaOperadorDepartamento({required this.id, required this.cpf, required this.nome, required this.email});
+  _PessoaOperadorDepartamento(
+      {required this.id,
+      required this.cpf,
+      required this.nome,
+      required this.email});
 }
 
 class ItemRequisicaoModel {
   final String? id;
-  final _ProdutoItem produto;
+  final ProdutoItem produto;
   num quantidade;
 
-  ItemRequisicaoModel({this.id, required this.produto, required this.quantidade});
+  ItemRequisicaoModel(
+      {this.id, required this.produto, required this.quantidade});
 
   factory ItemRequisicaoModel.fromJson(Map<String, dynamic> json) {
     Map<String, dynamic> jsonProduto = json['produto'];
     Map<String, dynamic> jsonGrupo = jsonProduto['grupo'];
     return ItemRequisicaoModel(
         id: json['id'],
-        produto: _ProdutoItem(
+        produto: ProdutoItem(
             id: jsonProduto['id'],
             descricao: jsonProduto['descricao'],
             codigoBarras: jsonProduto['codigoBarras'],
             unidadeMedida: jsonProduto['unidadeMedida'],
-            grupo: _GrupoItem(
+            grupo: GrupoItem(
               id: jsonGrupo['id'],
               descricao: jsonGrupo['descricao'],
             )),
         quantidade: json['quantidade']);
   }
 
-  factory ItemRequisicaoModel.fromProdutoModel(ProdutoModel produtoModel, num quantidade) {
+  factory ItemRequisicaoModel.fromProdutoModel(
+      ProdutoModel produtoModel, num quantidade) {
     return ItemRequisicaoModel(
-        produto: _ProdutoItem(
+        produto: ProdutoItem(
             id: produtoModel.id,
             descricao: produtoModel.descricao,
             codigoBarras: produtoModel.codigoBarras,
-            grupo: _GrupoItem(id: produtoModel.grupo.id, descricao: produtoModel.grupo.descricao),
+            grupo: GrupoItem(
+                id: produtoModel.grupo.id,
+                descricao: produtoModel.grupo.descricao),
             unidadeMedida: produtoModel.unidadeMedida),
         quantidade: quantidade);
   }
 }
 
-class _ProdutoItem {
+class ProdutoItem {
   final String id;
   final String descricao;
   final String codigoBarras;
-  final _GrupoItem grupo;
+  final GrupoItem grupo;
   final String unidadeMedida;
 
-  _ProdutoItem({required this.id, required this.descricao, required this.codigoBarras, required this.grupo, required this.unidadeMedida});
+  ProdutoItem(
+      {required this.id,
+      required this.descricao,
+      required this.codigoBarras,
+      required this.grupo,
+      required this.unidadeMedida});
 }
 
-class _GrupoItem {
+class GrupoItem {
   final String id;
   final String descricao;
 
-  _GrupoItem({required this.id, required this.descricao});
+  GrupoItem({required this.id, required this.descricao});
 }

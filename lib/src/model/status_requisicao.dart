@@ -1,4 +1,10 @@
-enum StatusRequisicao { AGUARDANDO_ATENDIMENTO, EM_ATENDIMENTO, ENTREGUE, CANCELADA }
+enum StatusRequisicao {
+  AGUARDANDO_ATENDIMENTO,
+  EM_ATENDIMENTO,
+  ENTREGUE,
+  CANCELADA,
+  AGUARDANDO_RECEBIMENTO
+}
 
 extension StatusRequisicaoExtension on StatusRequisicao {
   String get descricao {
@@ -11,6 +17,8 @@ extension StatusRequisicaoExtension on StatusRequisicao {
         return 'Entrege';
       case StatusRequisicao.CANCELADA:
         return 'Cancelada';
+      case StatusRequisicao.AGUARDANDO_RECEBIMENTO:
+        return 'Aguardando Recebimento';
       default:
         return '';
     }

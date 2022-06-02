@@ -8,22 +8,24 @@ class CardItemRequisicao extends StatelessWidget {
   final VoidCallback onAdicionarPressed;
   final ValueChanged<double>? onQuantidadeChanged;
 
-  final int indexItem;
+  final double? quantidade;
   final ItemRequisicaoModel itemRequisicao;
+  final bool enabled;
 
   const CardItemRequisicao({
     Key? key,
     required this.onRemoverPressed,
     required this.onAdicionarPressed,
     required this.itemRequisicao,
-    required this.indexItem,
     this.onQuantidadeChanged,
+    this.quantidade,
+    this.enabled = true,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController quantidadeTextFieldController =
-        TextEditingController(text: "${itemRequisicao.quantidade}");
+    TextEditingController quantidadeTextFieldController = TextEditingController(
+        text: "${quantidade ?? itemRequisicao.quantidade}");
     FocusNode focusNode = FocusNode();
     focusNode.addListener(
       (() {
@@ -43,6 +45,7 @@ class CardItemRequisicao extends StatelessWidget {
         title: Text(itemRequisicao.produto.descricao),
         subtitle: Text(itemRequisicao.produto.grupo.descricao),
         trailing: BotoesAdicionarRemoverProduto(
+          enabled: enabled,
           quantidadeTextField: TextField(
             focusNode: focusNode,
             controller: quantidadeTextFieldController,
@@ -51,6 +54,7 @@ class CardItemRequisicao extends StatelessWidget {
             },
             textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
+            readOnly: !enabled,
           ),
           onRemoverPressed: onRemoverPressed,
           onAdicionarPressed: onAdicionarPressed,

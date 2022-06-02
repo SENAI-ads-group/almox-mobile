@@ -19,10 +19,12 @@ class DropdownSearchDepartamento extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<DropdownSearchDepartamento> createState() => _DropdownSearchDepartamentoState();
+  State<DropdownSearchDepartamento> createState() =>
+      _DropdownSearchDepartamentoState();
 }
 
-class _DropdownSearchDepartamentoState extends State<DropdownSearchDepartamento> {
+class _DropdownSearchDepartamentoState
+    extends State<DropdownSearchDepartamento> {
   final DepartamentoService departamentoService = DepartamentoService();
 
   DepartamentoModel? _departamentoSelecionado;
@@ -44,7 +46,9 @@ class _DropdownSearchDepartamentoState extends State<DropdownSearchDepartamento>
   @override
   void initState() {
     super.initState();
-    departamentoService.fetchDepartamentos().then((value) => _mudarDepartamentoSelecionado(value));
+    departamentoService.fetchDepartamentos().then((value) {
+      if (mounted) _mudarDepartamentoSelecionado(value);
+    });
   }
 
   final _mensagemErro = Center(
@@ -66,8 +70,10 @@ class _DropdownSearchDepartamentoState extends State<DropdownSearchDepartamento>
   );
 
   final _mensagemCarregando = Center(
-    child: Column(
-        mainAxisAlignment: MainAxisAlignment.center, children: const [CircularProgressIndicator(), Text("carregando departamentos... aguarde...")]),
+    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
+      CircularProgressIndicator(),
+      Text("carregando departamentos... aguarde...")
+    ]),
   );
 
   final _mensagemNenhumItemEncontrado = Center(
@@ -108,12 +114,16 @@ class _DropdownSearchDepartamentoState extends State<DropdownSearchDepartamento>
       showSearchBox: true,
       searchDelay: const Duration(seconds: 1),
       searchFieldProps: _textFieldPesquisa,
-      popupShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+      popupShape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       itemAsString: (DepartamentoModel? dpto) => dpto?.descricao ?? "",
-      onFind: (String? filter) async => await departamentoService.fetchDepartamentos(descricao: filter),
-      emptyBuilder: (BuildContext context, String? v) => _mensagemNenhumItemEncontrado,
+      onFind: (String? filter) async =>
+          await departamentoService.fetchDepartamentos(descricao: filter),
+      emptyBuilder: (BuildContext context, String? v) =>
+          _mensagemNenhumItemEncontrado,
       loadingBuilder: (BuildContext context, String? v) => _mensagemCarregando,
-      errorBuilder: (BuildContext context, String? v, dynamic d) => _mensagemErro,
+      errorBuilder: (BuildContext context, String? v, dynamic d) =>
+          _mensagemErro,
       dropdownSearchDecoration: InputDecoration(
         labelText: "Departamento",
         labelStyle: TextStyle(fontSize: 16),

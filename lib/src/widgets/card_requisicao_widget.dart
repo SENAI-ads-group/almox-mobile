@@ -4,43 +4,56 @@ import 'package:almox_mobile/src/model/status_requisicao.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../model/operador_model.dart';
+
 class CardRequisicao extends StatelessWidget {
   final RequisicaoModel requisicao;
+  final GestureTapCallback? onTap;
+  final OperadorModel? operadorLogado;
 
-  const CardRequisicao({Key? key, required this.requisicao}) : super(key: key);
+  const CardRequisicao({
+    Key? key,
+    required this.requisicao,
+    this.onTap,
+    this.operadorLogado,
+  }) : super(key: key);
 
-  Widget? _iconeStatus() {
+  Widget? IconeStatus() {
     switch (requisicao.status) {
       case StatusRequisicao.AGUARDANDO_ATENDIMENTO:
-        return _IconeStatusRequisicao(
+        return IconeStatusRequisicao(
           backgroundColor: Colors.grey.shade500.withOpacity(0.2),
           iconData: Icons.more_time,
           color: Colors.grey.shade700,
         );
       case StatusRequisicao.EM_ATENDIMENTO:
-        return _IconeStatusRequisicao(
+        return IconeStatusRequisicao(
           backgroundColor: Colors.orangeAccent.withOpacity(0.2),
           iconData: Icons.timelapse_rounded,
           color: Colors.orangeAccent,
         );
       case StatusRequisicao.ENTREGUE:
-        return _IconeStatusRequisicao(
+        return IconeStatusRequisicao(
           backgroundColor: Color.fromRGBO(200, 230, 201, 1),
           iconData: Icons.check,
           color: Color.fromRGBO(37, 96, 41, 1),
         );
       case StatusRequisicao.CANCELADA:
-        return _IconeStatusRequisicao(
+        return IconeStatusRequisicao(
           backgroundColor: Colors.red.withOpacity(0.2),
           iconData: Icons.block,
           color: Colors.red,
+        );
+      case StatusRequisicao.AGUARDANDO_RECEBIMENTO:
+        return IconeStatusRequisicao(
+          backgroundColor: Colors.yellow.shade600.withOpacity(0.2),
+          iconData: Icons.timer_outlined,
+          color: Colors.yellow.shade600,
         );
       default:
         return null;
     }
   }
-
-  bool _podeCancelarRequisicao() => requisicao.status != StatusRequisicao.CANCELADA && requisicao.status != StatusRequisicao.ENTREGUE;
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +71,8 @@ class CardRequisicao extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: ListTile(
-                onTap: () => Navigator.of(context).pushNamed('/atenderRequisicao', arguments: requisicao),
-                leading: _iconeStatus(),
+                onTap: onTap,
+                leading: IconeStatus(),
                 title: Text(
                   requisicao.departamento.descricao,
                   style: const TextStyle(fontWeight: FontWeight.bold),
@@ -67,14 +80,26 @@ class CardRequisicao extends StatelessWidget {
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(DateFormat("dd 'de' MMMM 'de' y").format(requisicao.dataRequisicao)),
-                    Text(requisicao.almoxarife.pessoa.nome),
+                    Text(DateFormat("dd 'de' MMMM 'de' y")
+                        .format(requisicao.dataRequisicao)),
+                    if (operadorLogado == null)
+                      Text(
+                        '${requisicao.requisitante.pessoa.nome} -> ${requisicao.almoxarife.pessoa.nome}',
+                      )
+                    else
+                      operadorLogado!.id == requisicao.almoxarife.id
+                          ? Text(
+                              'Requisitante: ${requisicao.requisitante.pessoa.nome}',
+                            )
+                          : Text(
+                              'Almoxarife: ${requisicao.almoxarife.pessoa.nome}',
+                            )
                   ],
                 ),
               ),
             ),
           ),
-          if (_podeCancelarRequisicao())
+          if (operadorLogado != null)
             InkWell(
               onTap: () {},
               child: Column(
@@ -88,16 +113,29 @@ class CardRequisicao extends StatelessWidget {
                         width: 40,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.2),
-                            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15), topRight: Radius.circular(15)),
+                            color:
+                                operadorLogado!.id == requisicao.almoxarife.id
+                                    ? Colors.pinkAccent.withOpacity(0.2)
+                                    : Colors.blue.withOpacity(0.2),
+                            borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(15),
+                                topRight: Radius.circular(15)),
                           ),
                           child: Padding(
-                              padding: EdgeInsets.all(4),
-                              child: Icon(
-                                Icons.block_outlined,
-                                size: 25,
-                                color: Colors.red,
-                              )),
+                            padding: EdgeInsets.all(4),
+                            child:
+                                operadorLogado!.id == requisicao.almoxarife.id
+                                    ? Icon(
+                                        Icons.call_received_outlined,
+                                        size: 20,
+                                        color: Colors.pinkAccent,
+                                      )
+                                    : Icon(
+                                        Icons.call_made_outlined,
+                                        size: 20,
+                                        color: Colors.blue.shade700,
+                                      ),
+                          ),
                         ),
                       )
                     ],
@@ -111,12 +149,12 @@ class CardRequisicao extends StatelessWidget {
   }
 }
 
-class _IconeStatusRequisicao extends StatelessWidget {
+class IconeStatusRequisicao extends StatelessWidget {
   final Color backgroundColor;
   final Color color;
   final IconData iconData;
 
-  const _IconeStatusRequisicao({
+  const IconeStatusRequisicao({
     Key? key,
     required this.backgroundColor,
     required this.color,

@@ -7,33 +7,40 @@ class OperadorService {
   factory OperadorService() => _instance;
   OperadorService.internal();
 
-  Future<List<OperadorModel>> fetchOperadores({String? nome, String? email, String? cpf}) async {
+  Future<List<OperadorModel>> fetchOperadores(
+      {String? nome, String? email, String? cpf}) async {
     final Map<String, dynamic> queryParameters = {};
     if (nome != null) queryParameters['nome'] = nome;
     if (email != null) queryParameters['email'] = email;
     if (cpf != null) queryParameters['cpf'] = cpf;
 
-    final response = await _http.get("/operadores", queryParameters: queryParameters);
+    final response =
+        await _http.get("/operadores", queryParameters: queryParameters);
     if (response.statusCode == 200) {
       Map<String, dynamic> json = jsonDecode(utf8.decode(response.bodyBytes));
-      return (json['data'] as List<dynamic>).map((jsonData) => OperadorModel.fromJson(jsonData)).toList();
+      return (json['data'] as List<dynamic>)
+          .map((jsonData) => OperadorModel.fromJson(jsonData))
+          .toList();
     } else {
       throw Exception('Não foi possível carregar os operadores');
     }
   }
 
-  Future<List<OperadorModel>> fetchOperadoresAlmoxarifes({String? nome, String? email, String? cpf}) async {
+  Future<List<OperadorModel>> fetchOperadoresAlmoxarifes(
+      {String? nome, String? email, String? cpf}) async {
     final Map<String, dynamic> queryParameters = {};
     if (nome != null) queryParameters['nome'] = nome;
     if (email != null) queryParameters['email'] = email;
     if (cpf != null) queryParameters['cpf'] = cpf;
 
-    final response = await _http.get("/operadores/almoxarifes", queryParameters: queryParameters);
+    final response = await _http.get("/operadores/almoxarifes",
+        queryParameters: queryParameters);
     if (response.statusCode == 200) {
       Map<String, dynamic> json = jsonDecode(utf8.decode(response.bodyBytes));
-      return (json['data'] as List<dynamic>).map((jsonData) => OperadorModel.fromJson(jsonData)).toList();
+      return (json['data'] as List<dynamic>)
+          .map((jsonData) => OperadorModel.fromJson(jsonData))
+          .toList();
     } else {
-      print(response.statusCode);
       throw Exception('Não foi possível carregar os almoxarifes');
     }
   }

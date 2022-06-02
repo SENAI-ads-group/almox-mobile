@@ -28,10 +28,8 @@ class RequisicaoService {
   }
 
   Future<void> entregarRequisicao(String id) async {
-    final response = await _http.post('/requisicoes/' + id + '/entregar');
+    final response = await _http.post('/requisicoes/$id/entregar');
     if (response.statusCode != 202) {
-      print(response.statusCode);
-      print(response.body);
       throw Exception('Não foi possível entregar a requisição');
     }
   }
@@ -43,12 +41,25 @@ class RequisicaoService {
     }
   }
 
-  Future<List<RequisicaoModel>> fetchRequisicao() async {
+  Future<List<RequisicaoModel>> fetchRequisicoes() async {
     final response = await _http.get('/requisicoes');
 
     if (response.statusCode == 200) {
       Map<String, dynamic> json = jsonDecode(utf8.decode(response.bodyBytes));
-      return (json['data'] as List<dynamic>).map((jsonData) => RequisicaoModel.fromJson(jsonData)).toList();
+      return (json['data'] as List<dynamic>)
+          .map((jsonData) => RequisicaoModel.fromJson(jsonData))
+          .toList();
+    } else {
+      throw Exception('Não foi possível carregar as Requisições');
+    }
+  }
+
+  Future<RequisicaoModel> fetchRequisicao(String id) async {
+    final response = await _http.get('/requisicoes/$id');
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> json = jsonDecode(utf8.decode(response.bodyBytes));
+      return RequisicaoModel.fromJson(json);
     } else {
       throw Exception('Não foi possível carregar as Requisições');
     }

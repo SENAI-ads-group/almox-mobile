@@ -1,3 +1,4 @@
+import 'package:almox_mobile/src/app.dart';
 import 'package:almox_mobile/src/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:almox_mobile/src/routes/routes.dart';
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
           },
         ),
       ),
-      home: LoginPage(),
+      home: AppWidget(),
       routes: routes,
     );
   }

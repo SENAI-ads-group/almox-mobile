@@ -3,8 +3,6 @@ import 'package:almox_mobile/src/widgets/container_carregando_widget.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
-import 'package:almox_mobile/src/pages/login/login_reset-password.dart';
 import 'package:validatorless/validatorless.dart';
 import 'package:almox_mobile/src/validators/validators.dart';
 
@@ -257,4 +255,3 @@ class _NovoAcessoState extends State<NovoAcesso> {
     );
   }
 }
-z

@@ -51,6 +51,8 @@ class AtendimentoRequisicaoBloc
     emit(state.copyWith(carregando: true));
     try {
       await _requisicaoService.atenderRequisicao(state.requisicao.id);
+      final r = await _requisicaoService.fetchRequisicao(state.requisicao.id);
+      print(r.status);
       emit(AtendimentoRequisicaoState(
         requisicao:
             await _requisicaoService.fetchRequisicao(state.requisicao.id),
@@ -68,11 +70,13 @@ class AtendimentoRequisicaoBloc
     emit(state.copyWith(carregando: true));
     try {
       await _requisicaoService.entregarRequisicao(state.requisicao.id);
-      emit(AtendimentoRequisicaoState(
-        requisicao:
-            await _requisicaoService.fetchRequisicao(state.requisicao.id),
-        carregando: false,
-      ));
+      emit(
+        AtendimentoRequisicaoState(
+          requisicao:
+              await _requisicaoService.fetchRequisicao(state.requisicao.id),
+          carregando: false,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(carregando: false));
     }

@@ -57,22 +57,56 @@ class ListagemRequisicoesView extends StatelessWidget {
                     ),
                     SizedBox(height: 10),
                     if (MinhasRequisicoesStatus.success == state.status)
-                      ...state.minhasRequisicoes
-                          .map(
-                            (r) => CardRequisicao(
-                              requisicao: r,
-                              operadorLogado: operadorLogado,
-                              onTap: () async {
-                                await Navigator.of(context).pushNamed(
-                                    '/atenderRequisicao',
-                                    arguments: r);
-                                context
-                                    .read<MinhasRequisicoesBloc>()
-                                    .add(CarregarMinhasRequisicoes());
-                              },
+                      if (state.minhasRequisicoes.isNotEmpty)
+                        ...state.minhasRequisicoes
+                            .map(
+                              (r) => CardRequisicao(
+                                requisicao: r,
+                                operadorLogado: operadorLogado,
+                                onTap: () async {
+                                  await Navigator.of(context).pushNamed(
+                                      '/atenderRequisicao',
+                                      arguments: r);
+                                  context
+                                      .read<MinhasRequisicoesBloc>()
+                                      .add(CarregarMinhasRequisicoes());
+                                },
+                              ),
+                            )
+                            .toList()
+                      else
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            SizedBox(height: 100),
+                            Center(
+                              child: SizedBox(
+                                height: 100,
+                                width: 100,
+                                child: Icon(
+                                  Icons.warning,
+                                  color: Colors.orangeAccent,
+                                  size: 85,
+                                ),
+                              ),
                             ),
-                          )
-                          .toList()
+                            Text(
+                              'Você ainda não tem nenhuma requisição',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            SizedBox(height: 10),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.grey.shade700,
+                              ),
+                              onPressed: () => context
+                                  .read<MinhasRequisicoesBloc>()
+                                  .add(CarregarMinhasRequisicoes()),
+                              child: Text('Recarregar'),
+                            ),
+                          ],
+                        )
                     else if (MinhasRequisicoesStatus.loading == state.status)
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,

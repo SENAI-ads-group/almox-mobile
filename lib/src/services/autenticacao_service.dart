@@ -66,6 +66,7 @@ class AutenticacaoService {
   Future<void> logout() async {
     await _configuracaoService
         .atualizarConfiguracao("autenticacao", {"access_token": null});
+    _operadorLogado = null;
   }
 
   Future<http.Response?> _checkarToken() async {

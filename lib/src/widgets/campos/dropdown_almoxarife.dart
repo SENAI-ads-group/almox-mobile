@@ -67,7 +67,7 @@ class _DropdownSearchAlmoxarifeState extends State<DropdownSearchAlmoxarife> {
   final _mensagemCarregando = Center(
     child: Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
       CircularProgressIndicator(),
-      Text("carregando almoxarifes... aguarde...")
+      Text("carregando... aguarde...")
     ]),
   );
 

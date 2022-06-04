@@ -85,7 +85,8 @@ class AtenderRequisicaoView extends StatelessWidget {
           buildWhen: (previous, current) =>
               previous != current ||
               previous.requisicao.itens.length !=
-                  current.requisicao.itens.length,
+                  current.requisicao.itens.length ||
+              current.status != previous.status,
           builder: (context, state) {
             if (state.exibirQrcode) {
               return Scaffold(
@@ -200,7 +201,6 @@ class AtenderRequisicaoView extends StatelessWidget {
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
-                        SizedBox(height: 20),
                         Form(
                           key: _formKey,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -292,8 +292,10 @@ class AtenderRequisicaoView extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: state.podeAtender
-                        ? () =>
-                            atendimentoRequisicaoBloc.add(IniciarAtendimento())
+                        ? () {
+                            atendimentoRequisicaoBloc.add(IniciarAtendimento());
+                            atendimentoRequisicaoBloc.add(SetIndex(1));
+                          }
                         : null,
                     icon: Icon(Icons.start_outlined),
                   ),
@@ -314,51 +316,56 @@ class AtenderRequisicaoView extends StatelessWidget {
                           padding: EdgeInsets.only(bottom: 30),
                           child: _cardFormulario,
                         ),
-                        ListView(
+                        Column(
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                ElevatedButton(
-                                  style: ButtonStyle(
-                                    shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0)),
+                            Expanded(
+                              flex: 0,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  ElevatedButton(
+                                    style: ButtonStyle(
+                                      shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0)),
+                                      ),
                                     ),
-                                  ),
-                                  onPressed: state.podeEditarItens
-                                      ? () async {
-                                          List<ProdutoModel>?
-                                              produtosSelecionadosNaPesquisa =
-                                              await Navigator.pushNamed(context,
-                                                      '/selecionarProdutos')
-                                                  as List<ProdutoModel>?;
+                                    onPressed: state.podeEditarItens
+                                        ? () async {
+                                            List<ProdutoModel>?
+                                                produtosSelecionadosNaPesquisa =
+                                                await Navigator.pushNamed(
+                                                        context,
+                                                        '/selecionarProdutos')
+                                                    as List<ProdutoModel>?;
 
-                                          context
-                                              .read<AtendimentoRequisicaoBloc>()
-                                              .add(
-                                                AdicionarProdutos(
-                                                    produtosSelecionadosNaPesquisa ??
-                                                        []),
-                                              );
-                                        }
-                                      : null,
-                                  child: Center(
-                                    child: Text(
-                                      'Adicionar Produtos',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 18,
+                                            context
+                                                .read<
+                                                    AtendimentoRequisicaoBloc>()
+                                                .add(
+                                                  AdicionarProdutos(
+                                                      produtosSelecionadosNaPesquisa ??
+                                                          []),
+                                                );
+                                          }
+                                        : null,
+                                    child: Center(
+                                      child: Text(
+                                        'Adicionar Produtos',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 18,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                            SizedBox(
-                              height: 175,
+                            Expanded(
+                              flex: 5,
                               child: state.requisicao.itens.isEmpty
                                   ? _cardInformativoSemProdutosAdicionados
                                   : ListView(
@@ -429,8 +436,10 @@ class AtenderRequisicaoView extends StatelessWidget {
                                               context
                                                   .read<
                                                       AtendimentoRequisicaoBloc>()
-                                                  .add(RemoverQuantidadeItem(
-                                                      indexItem));
+                                                  .add(
+                                                    RemoverQuantidadeItem(
+                                                        indexItem),
+                                                  );
                                             }
                                           },
                                         );

@@ -39,12 +39,17 @@ class _SelecionarProdutosPageState extends State<SelecionarProdutosPage> {
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
-              return CarregandoDadosPage(textoCarregando: 'Carregando Produtos...', tituloPagina: 'Adicionar Produto');
+              return CarregandoDadosPage(
+                  textoCarregando: 'Carregando Produtos...',
+                  tituloPagina: 'Adicionar Produto');
             default:
               if (snapshot.hasError) {
-                return ErroCarregarDadosPage(textoErro: 'Não foi possível carregar os produtos', tituloPagina: 'Adicionar Produto');
+                return ErroCarregarDadosPage(
+                    textoErro: 'Não foi possível carregar os produtos',
+                    tituloPagina: 'Adicionar Produto');
               } else {
-                return _SelecionarProdutosWidget(produtos: produtos, grupos: grupos);
+                return _SelecionarProdutosWidget(
+                    produtos: produtos, grupos: grupos);
               }
           }
         });
@@ -55,10 +60,13 @@ class _SelecionarProdutosWidget extends StatefulWidget {
   final List<GrupoModel> grupos;
   final List<ProdutoModel> produtos;
 
-  _SelecionarProdutosWidget({Key? key, required this.grupos, required this.produtos}) : super(key: key);
+  _SelecionarProdutosWidget(
+      {Key? key, required this.grupos, required this.produtos})
+      : super(key: key);
 
   @override
-  State<_SelecionarProdutosWidget> createState() => __SelecionarProdutosWidgetState();
+  State<_SelecionarProdutosWidget> createState() =>
+      __SelecionarProdutosWidgetState();
 }
 
 class __SelecionarProdutosWidgetState extends State<_SelecionarProdutosWidget> {
@@ -66,7 +74,8 @@ class __SelecionarProdutosWidgetState extends State<_SelecionarProdutosWidget> {
 
   void _setProdutoSelecionado(ProdutoModel produto, bool? selecionado) {
     setState(() {
-      produtosSelecionados = produtosSelecionados.where((p) => p.id != produto.id).toList();
+      produtosSelecionados =
+          produtosSelecionados.where((p) => p.id != produto.id).toList();
 
       if (selecionado ?? false) {
         produtosSelecionados.add(produto);
@@ -100,12 +109,15 @@ class __SelecionarProdutosWidgetState extends State<_SelecionarProdutosWidget> {
         child: AppBar(
             backgroundColor: Theme.of(context).primaryColor,
             title: Text('Adicionar Produto'),
-            leading: IconButton(icon: Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+            leading: IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () => Navigator.pop(context)),
             bottom: TabBar(
               isScrollable: true,
               tabs: _tabs,
             )),
-        preferredSize: Size(MediaQuery.of(context).size.width, AppBar().preferredSize.height + 50));
+        preferredSize: Size(MediaQuery.of(context).size.width,
+            AppBar().preferredSize.height + 50));
   }
 
   Widget _checkbox(ProdutoModel produto) {
@@ -119,7 +131,11 @@ class __SelecionarProdutosWidgetState extends State<_SelecionarProdutosWidget> {
         shape: CircleBorder(),
         fillColor: MaterialStateProperty.all(Theme.of(context).primaryColor),
         side: MaterialStateBorderSide.resolveWith(
-          (states) => BorderSide(width: 1.5, color: isChecked ? Theme.of(context).primaryColor : Color.fromRGBO(226, 229, 234, 1)),
+          (states) => BorderSide(
+              width: 1.5,
+              color: isChecked
+                  ? Theme.of(context).primaryColor
+                  : Color.fromRGBO(226, 229, 234, 1)),
         ),
         checkColor: Colors.white,
       ),
@@ -128,12 +144,15 @@ class __SelecionarProdutosWidgetState extends State<_SelecionarProdutosWidget> {
 
   Widget _listagemProdutos(GrupoModel? grupo) {
     List<Widget> _cardsProdutos = widget.produtos
-        .where((ProdutoModel produto) => grupo == null ? true : produto.grupo.id == grupo.id)
+        .where((ProdutoModel produto) =>
+            grupo == null ? true : produto.grupo.id == grupo.id)
         .map((ProdutoModel produto) => Card(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)), side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  side: BorderSide(color: Color.fromRGBO(226, 229, 234, 1))),
               child: ListTile(
-                onTap: () => _setProdutoSelecionado(produto, !produtosSelecionados.contains(produto)),
+                onTap: () => _setProdutoSelecionado(
+                    produto, !produtosSelecionados.contains(produto)),
                 title: Text(produto.descricao),
                 subtitle: Text(produto.grupo.descricao),
                 trailing: _checkbox(produto),
@@ -194,7 +213,9 @@ class __SelecionarProdutosWidgetState extends State<_SelecionarProdutosWidget> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _tabs = [_listagemProdutos(null)];
-    _tabs.addAll(widget.grupos.map((GrupoModel grupo) => _listagemProdutos(grupo)).toList());
+    _tabs.addAll(widget.grupos
+        .map((GrupoModel grupo) => _listagemProdutos(grupo))
+        .toList());
 
     return DefaultTabController(
       length: widget.grupos.length + 1,
@@ -204,15 +225,26 @@ class __SelecionarProdutosWidgetState extends State<_SelecionarProdutosWidget> {
             color: Color.fromRGBO(245, 245, 245, 1),
             child: Column(
               children: [
-                Flexible(
-                    child: produtosSelecionados.isEmpty
-                        ? SizedBox(height: 16)
-                        : Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0), child: SizedBox(height: 60, child: _chipsProdutosSelecionados()))),
-                Expanded(child: Padding(padding: EdgeInsets.fromLTRB(16, 0, 16, 16), child: TabBarView(children: _tabs)))
+                produtosSelecionados.isEmpty
+                    ? SizedBox(height: 16)
+                    : Padding(
+                        padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                        child: SizedBox(
+                            height: 60, child: _chipsProdutosSelecionados()),
+                      ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    child: TabBarView(
+                      children: _tabs,
+                    ),
+                  ),
+                )
               ],
             )),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: produtosSelecionados.isNotEmpty ? _botaoAdicionar() : null,
+        floatingActionButton:
+            produtosSelecionados.isNotEmpty ? _botaoAdicionar() : null,
       ),
     );
   }

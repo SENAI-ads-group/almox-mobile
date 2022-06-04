@@ -41,6 +41,14 @@ class RequisicaoService {
     }
   }
 
+  Future<void> confirmarRecebimentoRequisicao(String codigoConfirmacao) async {
+    final response = await _http
+        .post('/requisicoes/$codigoConfirmacao/confirmar-recebimento');
+    if (response.statusCode != 202) {
+      throw Exception('Não foi possível confirmar o recebimento da requisição');
+    }
+  }
+
   Future<List<RequisicaoModel>> fetchRequisicoes() async {
     final response = await _http.get('/requisicoes');
 

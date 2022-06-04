@@ -72,7 +72,7 @@ class _DropdownSearchDepartamentoState
   final _mensagemCarregando = Center(
     child: Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
       CircularProgressIndicator(),
-      Text("carregando departamentos... aguarde...")
+      Text("carregando... aguarde...")
     ]),
   );
 

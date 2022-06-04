@@ -3,6 +3,7 @@ import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../almox_app_theme.dart';
 import '../../services/autenticacao_service.dart';
 import '../../widgets/container_carregando_widget.dart';
 
@@ -26,22 +27,26 @@ class _OperadorPageState extends State<OperadorPage> {
         .then((value) => setState(() => _operadorLogado = value));
   }
 
-  _botaoLogout() => TextButton(
-        style: TextButton.styleFrom(
+  _botaoLogout() => SizedBox(
+        height: 50,
+        child: TextButton(
+          style: TextButton.styleFrom(
             backgroundColor: Colors.red,
             elevation: 15,
-            shadowColor: Colors.green),
-        child: Text(
-          'Sair',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
+            shadowColor: Colors.transparent,
           ),
+          child: Text(
+            'Sair',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          onPressed: () => _autenticacaoService
+              .logout()
+              .then((_) => Navigator.pushNamed(context, '/login')),
         ),
-        onPressed: () => _autenticacaoService
-            .logout()
-            .then((_) => Navigator.pushNamed(context, '/login')),
       );
 
   PreferredSize _appBar(BuildContext context) {
@@ -95,17 +100,22 @@ class _OperadorPageState extends State<OperadorPage> {
                     fontSize: 20,
                   ))),
         if (_operadorLogado != null)
-          "perfil": TextFormField(
-              initialValue: _operadorLogado!.funcoes.first,
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Perfil',
-                  enabled: false,
-                  labelStyle: TextStyle(
-                    color: Colors.black38,
-                    fontWeight: FontWeight.w400,
-                    fontSize: 20,
-                  )))
+          "funcoes": TextFormField(
+            initialValue:
+                _operadorLogado!.funcoes.reduce((acc, curr) => '$acc, $curr'),
+            minLines: 1,
+            maxLines: 2,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Funções',
+              enabled: false,
+              labelStyle: TextStyle(
+                color: Colors.black38,
+                fontWeight: FontWeight.w400,
+                fontSize: 20,
+              ),
+            ),
+          )
       };
 
   _cardFormulario() => Card(
@@ -151,12 +161,17 @@ class _OperadorPageState extends State<OperadorPage> {
       );
 
   _body() => ListView(
-        children: [_cardFormulario(), SizedBox(height: 50), _botaoLogout()],
+        children: [
+          _cardFormulario(),
+          SizedBox(height: MediaQuery.of(context).size.height - 600),
+          _botaoLogout(),
+        ],
       );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AlmoxAppTheme.background,
       appBar: _appBar(context),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),

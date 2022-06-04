@@ -179,21 +179,6 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text('Cabeçalho',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-                ]),
-            Row(mainAxisAlignment: MainAxisAlignment.start, children: const [
-              Text('Informações da Requisição',
-                  style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w400)),
-            ]),
-            SizedBox(height: 20),
             Form(
               key: _formKey,
               autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -313,7 +298,7 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
         SizedBox(height: 10),
         _botaoAdicionarProduto,
         SizedBox(
-          height: 175,
+          height: 200,
           child: itensSelecionados.isEmpty
               ? _cardInformativoSemProdutosAdicionados
               : ListView(

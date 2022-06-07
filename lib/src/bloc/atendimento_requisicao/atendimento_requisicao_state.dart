@@ -51,7 +51,7 @@ class AtendimentoRequisicaoState {
   }
 
   bool get podeEntregar =>
-      status == StatusRequisicao.EM_ATENDIMENTO &&
+      _requisicao.status == StatusRequisicao.EM_ATENDIMENTO &&
       operadorLogado?.id == _requisicao.almoxarife.id;
 
   bool get podeEditarItens {

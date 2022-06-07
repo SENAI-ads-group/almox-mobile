@@ -49,6 +49,22 @@ class RequisicaoService {
     }
   }
 
+  Future<void> atualizarItens(
+      String id, List<ItemRequisicaoModel> itens) async {
+    final body = itens
+        .map((item) => {
+              "idProduto": item.produto.id,
+              "quantidade": item.quantidade,
+            })
+        .toList();
+
+    final response =
+        await _http.put('/requisicoes/$id/itens', body: json.encode(body));
+    if (response.statusCode != 200) {
+      throw Exception('Não foi possível atualizar os itens');
+    }
+  }
+
   Future<List<RequisicaoModel>> fetchRequisicoes() async {
     final response = await _http.get('/requisicoes');
 

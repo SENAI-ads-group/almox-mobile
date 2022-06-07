@@ -45,15 +45,29 @@ class ListagemRequisicoesView extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 15),
-                    Container(
-                      margin: EdgeInsets.only(left: 5),
-                      child: Text(
-                        'Minhas Requisições',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 20,
-                            color: Colors.black87),
-                      ),
+                    Row(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(left: 5),
+                          child: Text(
+                            'Minhas Requisições',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 20,
+                                color: Colors.black87),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => context
+                              .read<MinhasRequisicoesBloc>()
+                              .add(CarregarMinhasRequisicoes()),
+                          icon: Icon(
+                            Icons.sync,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        )
+                      ],
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     ),
                     SizedBox(height: 10),
                     if (MinhasRequisicoesStatus.success == state.status)

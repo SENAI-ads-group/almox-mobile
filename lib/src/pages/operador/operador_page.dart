@@ -33,7 +33,7 @@ class _OperadorPageState extends State<OperadorPage> {
           style: TextButton.styleFrom(
             backgroundColor: Colors.red,
             elevation: 15,
-            shadowColor: Colors.transparent,
+            shadowColor: AlmoxAppTheme.background,
           ),
           child: Text(
             'Sair',

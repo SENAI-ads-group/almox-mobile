@@ -85,7 +85,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ScaffoldMessenger.of(context).showSnackBar(_snackbarLoginInvalido);
         }
       } catch (e) {
-        print(e.toString());
         setState(() => _carregando = false);
         ScaffoldMessenger.of(context).showSnackBar(_snackbarErro);
       }

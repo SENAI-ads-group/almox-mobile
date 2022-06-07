@@ -18,6 +18,7 @@ class AtendimentoRequisicaoBloc
     on<IniciarAtendimento>(_onIniciarAtendimento);
     on<EntregarRequisicao>(_onEntregarRequisicao);
     on<CancelarRequisicao>(_onCancelarRequisicao);
+    on<AtualizarItens>(_onAtualizarItens);
 
     on<AdicionarProdutos>(_onAdicionarProdutos);
     on<RemoverItem>(_onRemoverItem);
@@ -51,12 +52,11 @@ class AtendimentoRequisicaoBloc
     emit(state.copyWith(carregando: true));
     try {
       await _requisicaoService.atenderRequisicao(state.requisicao.id);
-      final r = await _requisicaoService.fetchRequisicao(state.requisicao.id);
-      print(r.status);
       emit(AtendimentoRequisicaoState(
         requisicao:
             await _requisicaoService.fetchRequisicao(state.requisicao.id),
         carregando: false,
+        operadorLogado: state.operadorLogado,
       ));
     } catch (e) {
       emit(state.copyWith(carregando: false));
@@ -75,6 +75,7 @@ class AtendimentoRequisicaoBloc
           requisicao:
               await _requisicaoService.fetchRequisicao(state.requisicao.id),
           carregando: false,
+          operadorLogado: state.operadorLogado,
         ),
       );
     } catch (e) {
@@ -92,6 +93,27 @@ class AtendimentoRequisicaoBloc
       emit(AtendimentoRequisicaoState(
         requisicao:
             await _requisicaoService.fetchRequisicao(state.requisicao.id),
+        operadorLogado: state.operadorLogado,
+        carregando: false,
+      ));
+    } catch (e) {
+      emit(state.copyWith(carregando: false));
+    }
+  }
+
+  Future<void> _onAtualizarItens(
+    AtualizarItens event,
+    Emitter<AtendimentoRequisicaoState> emit,
+  ) async {
+    emit(state.copyWith(carregando: true));
+    try {
+      await _requisicaoService.atualizarItens(
+          state.requisicao.id, state.requisicao.itens);
+      final novaRequisicao =
+          await _requisicaoService.fetchRequisicao(state.requisicao.id);
+      emit(AtendimentoRequisicaoState(
+        requisicao: novaRequisicao,
+        operadorLogado: state.operadorLogado,
         carregando: false,
       ));
     } catch (e) {

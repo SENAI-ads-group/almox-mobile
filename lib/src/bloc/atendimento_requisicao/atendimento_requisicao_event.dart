@@ -11,6 +11,8 @@ class EntregarRequisicao implements AtendimentoRequisicaoEvent {}
 
 class CancelarRequisicao implements AtendimentoRequisicaoEvent {}
 
+class AtualizarItens implements AtendimentoRequisicaoEvent {}
+
 class AdicionarProdutos implements AtendimentoRequisicaoEvent {
   final List<ProdutoModel> produtos;
 

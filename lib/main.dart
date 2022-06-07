@@ -1,5 +1,4 @@
 import 'package:almox_mobile/src/app.dart';
-import 'package:almox_mobile/src/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:almox_mobile/src/routes/routes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';

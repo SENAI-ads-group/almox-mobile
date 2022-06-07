@@ -49,3 +49,18 @@ Future<http.Response> post(String url,
         onTimeout: () => http.Response('Error', 408),
       );
 }
+
+Future<http.Response> put(String url,
+    {Map<String, String>? headers, Object? body, Encoding? encoding}) async {
+  return http
+      .put(
+        parseUrl(url),
+        headers: await _configureHeaders(headers),
+        body: body,
+        encoding: encoding,
+      )
+      .timeout(
+        const Duration(seconds: 5),
+        onTimeout: () => http.Response('Error', 408),
+      );
+}

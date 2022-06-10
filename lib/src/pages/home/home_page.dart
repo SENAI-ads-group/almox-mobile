@@ -221,8 +221,7 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
-                if (_operadorLogado != null)
-                  ListagemRequisicoesView(operadorLogado: _operadorLogado!)
+                ListagemRequisicoesView(operadorLogado: _operadorLogado)
               ],
             ),
           ),

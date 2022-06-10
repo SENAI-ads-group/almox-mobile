@@ -8,7 +8,7 @@ import '../../bloc/minhas_requisicoes/minhas_requisicoes_state.dart';
 import '../../widgets/card_requisicao_widget.dart';
 
 class ListagemRequisicoesView extends StatelessWidget {
-  final OperadorModel operadorLogado;
+  final OperadorModel? operadorLogado;
   const ListagemRequisicoesView({Key? key, required this.operadorLogado})
       : super(key: key);
 

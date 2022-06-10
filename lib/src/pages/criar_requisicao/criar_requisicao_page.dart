@@ -298,7 +298,7 @@ class _CriarRequisicaoPageState extends State<CriarRequisicaoPage> {
         SizedBox(height: 10),
         _botaoAdicionarProduto,
         SizedBox(
-          height: 200,
+          height: 440,
           child: itensSelecionados.isEmpty
               ? _cardInformativoSemProdutosAdicionados
               : ListView(

@@ -54,9 +54,9 @@ class AutenticacaoService {
       "senha": senha,
     };
 
-    await _http.post(
+    final response = await _http.post(
       '/operadores/solicitacoes-cadastro',
-      body: body,
+      body: json.encode(body),
       headers: {
         'Authorization': '',
       },

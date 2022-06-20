@@ -3,7 +3,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
    <application
-        android:label="almox_mobile"
+        android:label="Almox"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

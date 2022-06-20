@@ -63,7 +63,7 @@ class _NovoAcessoState extends State<NovoAcesso> {
               "Novo por aqui?",
               style: TextStyle(
                 fontSize: 25,
-                color: Colors.blue,
+                color: Theme.of(context).primaryColor,
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,
@@ -75,7 +75,7 @@ class _NovoAcessoState extends State<NovoAcesso> {
               'Preecha os campos abaixo e aguarde autorização de acesso.',
               style: TextStyle(
                 fontSize: 15,
-                color: Colors.blue,
+                color: Theme.of(context).primaryColor,
                 fontWeight: FontWeight.w400,
               ),
               textAlign: TextAlign.center,
@@ -117,7 +117,7 @@ class _NovoAcessoState extends State<NovoAcesso> {
               ],
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: "Cpf",
+                labelText: "CPF",
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.article_outlined),
                 labelStyle: TextStyle(
@@ -220,6 +220,22 @@ class _NovoAcessoState extends State<NovoAcesso> {
                         senha: _passwordEC.text,
                       );
                       setState(() => carregando = false);
+
+                      ScaffoldMessenger.of(context)
+                        ..removeCurrentSnackBar()
+                        ..showSnackBar(SnackBar(
+                          content: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Text(
+                                  'Solicitação de Cadastro Realizada com Sucesso!'),
+                              Icon(Icons.check, color: Colors.white),
+                            ],
+                          ),
+                          duration: Duration(milliseconds: 800),
+                          backgroundColor: Colors.green,
+                        ));
+                      Navigator.of(context).pop();
                     } catch (e) {
                       setState(() => carregando = false);
                     }
@@ -244,7 +260,7 @@ class _NovoAcessoState extends State<NovoAcesso> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Theme.of(context).primaryColor,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           color: Colors.white,

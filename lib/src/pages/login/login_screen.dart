@@ -161,14 +161,6 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const Text(
-                "Login",
-                style: TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.blue,
-                ),
-              ),
               const SizedBox(
                 height: 25,
               ),
@@ -209,22 +201,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: MaterialButton(
                       onPressed: _onRealizarLogin,
                       child: const Text(
-                        "LOGIN",
+                        "ENTRAR",
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.white,
                         ),
                       ))),
-              const SizedBox(
-                height: 30,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Divider(
-                height: 30,
-                color: Colors.black,
-              ),
               const SizedBox(
                 height: 10,
               ),
@@ -256,7 +238,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     return Padding(
-        padding: const EdgeInsets.all(30),
+        padding: const EdgeInsets.all(20),
         child: _carregando
             ? ContainerCarregando(child: _formulario)
             : _formulario);
